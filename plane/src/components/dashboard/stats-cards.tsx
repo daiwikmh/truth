@@ -59,7 +59,7 @@ export function StatsCards({
             i < cards.length - 1 ? "border-r border-foreground/15" : ""
           }`}
         >
-          <span className="text-[8px] tracking-[0.12em] uppercase text-muted-foreground font-mono w-16 shrink-0">
+          <span className="text-[10px] tracking-[0.12em] uppercase text-muted-foreground font-mono w-16 shrink-0">
             {card.label}
           </span>
           <span
@@ -68,7 +68,7 @@ export function StatsCards({
           >
             {card.value}
           </span>
-          <span className="text-[9px] font-mono text-muted-foreground">
+          <span className="text-[11px] font-mono text-muted-foreground">
             {card.unit}
           </span>
         </motion.div>

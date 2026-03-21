@@ -4,15 +4,33 @@ import type { SocialData } from "../sample-data";
 import type { EvalAgentConfig } from "./registry";
 
 async function analyzeSocial(data: SocialData): Promise<LayerAnalysis> {
-  const system = `You are a community sentiment analyst evaluating DePIN/public goods projects. Your role is to objectively assess community health and flag suspicious patterns like bot farms, astroturfing, censored criticism, or manufactured engagement. Do NOT make funding recommendations — just report what the data shows. Respond ONLY with valid JSON — no markdown, no explanation outside the JSON.`;
+  const system = `You are a community sentiment analyst evaluating DePIN/public goods projects. Your role is to objectively assess community health and flag suspicious patterns like bot farms, astroturfing, censored criticism, or manufactured engagement. Do NOT make funding recommendations — just report what the data shows. Respond ONLY with valid JSON — no markdown, no explanation outside the JSON.
+
+CRITICAL RULES:
+- If all metrics are zero or empty, it means we could NOT fetch social data for this project. This is a data availability issue, NOT evidence of no community.
+- When data is unavailable, score should be 50 (neutral/unknown) and signals should indicate "insufficient data" with LOW confidence. Do NOT penalize a project for missing data.
+- Only draw negative conclusions from data that is actually present and clearly negative.
+- Well-known protocols (Aave, Uniswap, Compound, etc.) have massive communities. Zero metrics for these projects means our data pipeline failed, not that they have no community.`;
+
+  const noData = data.twitterFollowers === 0 && data.recentMentions.length === 0 && data.communityComplaints.length === 0;
+
+  // No data at all: skip LLM call, return a marker result
+  if (noData) {
+    return {
+      layer: "social",
+      score: -1,
+      summary: "Social data unavailable. No metrics could be fetched for this project. This layer is excluded from the final integrity score.",
+      signals: [{ text: "No social data available from Dune or Twitter", severity: "low", source: "data-pipeline", confidence: 0.1 }],
+    };
+  }
 
   const prompt = `Analyze this social data and return a JSON object:
 
 - Followers: ${data.twitterFollowers}, engagement: ${data.avgEngagementRate}%
 - Sentiment: ${data.sentimentScore}/1.0
 - Bot likelihood: ${data.botLikelihoodPercent}%
-- Complaints: ${data.communityComplaints.map((c) => `"${c}"`).join(", ")}
-- Recent mentions: ${data.recentMentions.map((m) => `[${m.sentiment}] "${m.text}"`).join(" | ")}
+- Complaints: ${data.communityComplaints.map((c) => `"${c}"`).join(", ") || "none"}
+- Recent mentions: ${data.recentMentions.map((m) => `[${m.sentiment}] "${m.text}"`).join(" | ") || "none available"}
 
 Focus on disconnect between official messaging and user experience.
 

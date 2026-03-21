@@ -48,13 +48,19 @@ export async function fetchGithubData(
       : 100;
 
   const issueList = issues as { created_at: string; comments: number }[];
+  // Use issues with comments as "responded to" proxy; measure age of uncommented issues
+  const respondedCount = issueList.filter((i) => i.comments > 0).length;
+  const responseRate = issueList.length > 0 ? Math.round((respondedCount / issueList.length) * 100) : 100;
+  // Only measure age of recent open issues (last 90 days) to avoid stale issue bias
+  const recentCutoff = Date.now() - 90 * 86400000;
+  const recentIssues = issueList.filter((i) => new Date(i.created_at).getTime() > recentCutoff);
   const avgResponse =
-    issueList.length > 0
-      ? issueList.reduce(
+    recentIssues.length > 0
+      ? recentIssues.reduce(
           (s: number, i: { created_at: string }) =>
             s + (Date.now() - new Date(i.created_at).getTime()) / 3600000,
           0
-        ) / issueList.length
+        ) / recentIssues.length
       : 0;
 
   const lastCommit = (commits as { commit: { committer: { date: string } } }[])[0];

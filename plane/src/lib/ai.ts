@@ -35,8 +35,8 @@ export async function llmCall(
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
-      "HTTP-Referer": "https://integrity-score.app",
-      "X-Title": "Integrity Score Agent",
+      "HTTP-Referer": "https://dope.app",
+      "X-Title": "Dope Agent",
     },
     body: JSON.stringify({
       model: MODEL,

@@ -13,7 +13,7 @@ interface TopbarProps {
 
 const STATUS_CONFIG = {
   idle: { label: "AWAITING", color: "text-foreground/40", dot: "bg-foreground/20" },
-  analyzing: { label: "LIVE", color: "text-[#ea580c]", dot: "bg-[#ea580c] animate-blink" },
+  analyzing: { label: "LIVE", color: "text-[#06b6d4]", dot: "bg-[#06b6d4] animate-blink" },
   complete: { label: "COMPLETE", color: "text-[#22c55e]", dot: "bg-[#22c55e]" },
   error: { label: "FAULT", color: "text-[#ef4444]", dot: "bg-[#ef4444]" },
 };
@@ -33,9 +33,9 @@ export function Topbar({ projectName, status, sidebarOpen, onToggleSidebar }: To
           </button>
 
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono text-muted-foreground">$</span>
+            <span className="text-[12px] font-mono text-muted-foreground">$</span>
             <h2 className="text-xs font-mono font-bold tracking-wider uppercase">
-              {projectName || "integrity-scan"}
+              {projectName || "dope"}
             </h2>
           </div>
         </div>
@@ -48,14 +48,14 @@ export function Topbar({ projectName, status, sidebarOpen, onToggleSidebar }: To
           >
             <div className={`w-1.5 h-1.5 ${cfg.dot}`} />
             <Radio size={10} />
-            <span className="text-[9px] font-mono tracking-widest uppercase">
+            <span className="text-[11px] font-mono tracking-widest uppercase">
               {cfg.label}
             </span>
           </motion.div>
 
           <Link
             href="/"
-            className="flex items-center gap-1 text-[9px] font-mono tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center gap-1 text-[11px] font-mono tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft size={10} />
             EXIT

@@ -15,14 +15,14 @@
   --secondary-foreground: 0 0% 4%;
   --muted: 40 10% 85%;
   --muted-foreground: 0 0% 40%;
-  --accent: 20 90% 45%;
+  --accent: 187 85% 43%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 75%;
   --input: 0 0% 75%;
   --ring: 0 0% 4%;
-  --radius: 0rem;
+  --radius: 0.75rem;
 }
 
 .dark {
@@ -38,7 +38,7 @@
   --secondary-foreground: 43 23% 93%;
   --muted: 0 0% 15%;
   --muted-foreground: 0 0% 60%;
-  --accent: 20 90% 50%;
+  --accent: 187 85% 43%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
@@ -71,7 +71,8 @@
   --color-ring: hsl(var(--ring));
 
   --font-sans: var(--font-sans), "Inter", system-ui, sans-serif;
-  --font-mono: var(--font-mono), "JetBrains Mono", monospace;
+  --font-mono: var(--font-mono), "IBM Plex Mono", monospace;
+  --font-heading: var(--font-heading), "Space Grotesk", sans-serif;
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -79,7 +80,7 @@
 
   --color-score-strong: #22c55e;
   --color-score-moderate: #eab308;
-  --color-score-weak: #f97316;
+  --color-score-weak: #a855f7;
   --color-score-critical: #ef4444;
 }
 
@@ -151,6 +152,6 @@ body {
 .score-gauge-fill {
   fill: none;
   stroke-width: 8;
-  stroke-linecap: butt;
+  stroke-linecap: round;
   transition: stroke-dashoffset 1.5s ease-out;
 }

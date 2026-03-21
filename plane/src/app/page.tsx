@@ -1,3 +1,4 @@
+import "./landing.css";
 import { Navbar } from "@/src/components/landing/navbar";
 import { HeroSection } from "@/src/components/landing/hero-section";
 import { FeatureGrid } from "@/src/components/landing/feature-grid";

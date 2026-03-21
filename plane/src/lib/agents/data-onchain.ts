@@ -67,7 +67,7 @@ export const config: DataAgentConfig = {
 
     const results = await Promise.allSettled(
       contracts.map(async (c) => {
-        const data = await fetchOnchainData(c.address, c.chain ?? project.chain ?? "ethereum");
+        const data = await fetchOnchainData(c.address, c.chain ?? project.chain ?? "ethereum", c.label);
         return { ...data, label: c.label, address: c.address } as OnchainContractData;
       })
     );

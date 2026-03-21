@@ -30,7 +30,7 @@ const LAYER_LABELS: Record<string, string> = {
 const SEVERITY_COLORS: Record<string, string> = {
   low: "text-muted-foreground",
   medium: "text-[#eab308]",
-  high: "text-[#f97316]",
+  high: "text-[#a855f7]",
   critical: "text-[#ef4444]",
 };
 
@@ -53,7 +53,7 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
       {/* Back */}
       <button
         onClick={onBack}
-        className="flex items-center gap-1.5 text-[9px] font-mono tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors cursor-pointer mb-4"
+        className="flex items-center gap-1.5 text-[13px] font-mono tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors cursor-pointer mb-4"
       >
         <ArrowLeft size={10} />
         BACK TO BLOG
@@ -67,10 +67,10 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
         className="border border-foreground/15 rounded-xl overflow-hidden mb-0"
       >
         <div className="flex items-center justify-between border-b border-foreground/15 px-4 py-2">
-          <span className="text-[8px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
-            INTEGRITY REPORT
+          <span className="text-[14px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
+            DOPE REPORT
           </span>
-          <span className="text-[8px] font-mono text-muted-foreground/50 tabular-nums">
+          <span className="text-[14px] font-mono text-muted-foreground/50 tabular-nums">
             {publishedAt}
           </span>
         </div>
@@ -87,10 +87,10 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
           {/* Summary + layers */}
           <div className="flex-1 flex flex-col">
             <div className="px-5 py-4 flex-1">
-              <span className="text-[7px] tracking-[0.2em] uppercase text-muted-foreground font-mono block mb-2">
+              <span className="text-[13px] tracking-[0.2em] uppercase text-muted-foreground font-mono block mb-2">
                 EXECUTIVE SUMMARY
               </span>
-              <p className="text-[12px] font-mono text-foreground leading-[1.8]">
+              <p className="text-[14px] font-mono text-foreground leading-[1.8]">
                 {report.executiveSummary}
               </p>
             </div>
@@ -105,7 +105,7 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
                   >
                     <div className="flex items-center gap-1 mb-2">
                       <Icon size={9} className="text-muted-foreground/60" />
-                      <span className="text-[7px] tracking-[0.12em] uppercase text-muted-foreground font-mono">
+                      <span className="text-[13px] tracking-[0.12em] uppercase text-muted-foreground font-mono">
                         {LAYER_LABELS[layer] ?? layer.toUpperCase()}
                       </span>
                     </div>
@@ -126,7 +126,7 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
         className="border border-foreground/15 rounded-xl overflow-hidden mt-3"
       >
         <div className="px-4 py-2 border-b border-foreground/15">
-          <span className="text-[8px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
+          <span className="text-[14px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
             IMPACT VECTORS
           </span>
         </div>
@@ -146,25 +146,25 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
             >
               {/* Vector title */}
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[12px] font-mono font-bold">
+                <span className="text-[14px] font-mono font-bold">
                   {vector.theme}
                 </span>
-                <span className="px-2 py-0.5 text-[8px] font-mono font-bold bg-foreground text-background rounded-md">
+                <span className="px-2 py-0.5 text-[14px] font-mono font-bold bg-foreground text-background rounded-md">
                   GAP {gap}%
                 </span>
               </div>
 
-              <p className="text-[11px] font-mono text-muted-foreground leading-[1.7] mb-3">
+              <p className="text-[13px] font-mono text-muted-foreground leading-[1.7] mb-3">
                 {vector.summary}
               </p>
 
               {/* Divergence bar */}
               <div className="mb-3">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[7px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
+                  <span className="text-[13px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
                     CLAIMED {(vector.claimedPerformance * 100).toFixed(0)}%
                   </span>
-                  <span className="text-[7px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
+                  <span className="text-[13px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
                     OBSERVED {(vector.observedReality * 100).toFixed(0)}%
                   </span>
                 </div>
@@ -185,17 +185,17 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
                 {vector.signals.map((signal, j) => (
                   <div
                     key={j}
-                    className="flex items-start gap-2.5 text-[10px] font-mono"
+                    className="flex items-start gap-2.5 text-[14px] font-mono"
                   >
                     <span
-                      className={`shrink-0 w-14 uppercase text-[8px] tracking-wider pt-0.5 ${SEVERITY_COLORS[signal.severity] ?? "text-muted-foreground"}`}
+                      className={`shrink-0 w-14 uppercase text-[14px] tracking-wider pt-0.5 ${SEVERITY_COLORS[signal.severity] ?? "text-muted-foreground"}`}
                     >
                       {signal.severity}
                     </span>
                     <span className="text-foreground/80 flex-1 leading-relaxed">
                       {signal.text}
                     </span>
-                    <span className="text-muted-foreground/40 shrink-0 text-[8px] tabular-nums pt-0.5">
+                    <span className="text-muted-foreground/40 shrink-0 text-[14px] tabular-nums pt-0.5">
                       {(signal.confidence * 100).toFixed(0)}%
                     </span>
                   </div>
@@ -214,7 +214,7 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
         className="border border-foreground/15 rounded-xl overflow-hidden mt-3 mb-8"
       >
         <div className="px-4 py-2 border-b border-foreground/15">
-          <span className="text-[8px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
+          <span className="text-[14px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
             RECOMMENDATIONS
           </span>
         </div>
@@ -224,12 +224,12 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
             className="flex items-start gap-3 px-5 py-3 border-b border-foreground/5 last:border-b-0"
           >
             <span
-              className="text-[10px] font-mono font-bold shrink-0 tabular-nums"
+              className="text-[14px] font-mono font-bold shrink-0 tabular-nums"
               style={{ color }}
             >
               {String(i + 1).padStart(2, "0")}
             </span>
-            <p className="text-[11px] font-mono text-foreground/80 leading-[1.7]">
+            <p className="text-[13px] font-mono text-foreground/80 leading-[1.7]">
               {rec}
             </p>
           </div>

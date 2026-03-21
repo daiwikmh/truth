@@ -17,55 +17,76 @@ A project evaluation runs through a **3-wave pipeline** where independent agents
                             | twitter, governance |
                             +---------+-----------+
                                       |
-          WAVE 1: DATA                |
-          (parallel)                  v
-    +------+------+------+------+
-    |      |      |      |      |
-    v      v      v      v      |
- +------+------+------+------+  |
- |data- |data- |data- |data- |  |
- |onchain|github|social|gov   |  |
- +--+---+--+---+--+---+--+---+  |
-    |      |      |      |      |
-    | Etherscan   | Dune  | Snapshot
-    | Alchemy     | GitHub| (Twitter
-    |      |      | API   |  fallback)
-    v      v      v      v
- +------------------------------+
- |       dataOutputs{}          |
- | keyed by agent ID            |
- +------+-----------+-----------+
-        |           |
-        | WAVE 2: EVAL (parallel)
-        | each agent sees ONLY its
-        | declared dataInputs
-        v
- +------+------+------+------+
- |eval- |eval- |eval- |eval- |
- |onchain|dev  |social|gov   |
- +--+---+--+---+--+---+--+---+
-    |      |      |      |
-    v      v      v      v
- +------------------------------+
- |    LayerAnalysis[] outputs   |
- | score 0-100, signals, summary|
- +-------------+----------------+
-               |
-               | WAVE 3: SYNTH (single)
-               v
- +------------------------------+
- |     synth-integrity          |
- | groups signals into vectors  |
- | computes divergence score    |
- | produces verdict + report    |
- +-------------+----------------+
-               |
-               v
- +------------------------------+
- |      IntegrityReport         |
- | score, verdict, vectors,     |
- | layer scores, recommendations|
- +------------------------------+
+                         +------------+------------+
+                         |                         |
+                    EIGENCOMPUTE_              LOCAL
+                    RUNNER_URL set?            FALLBACK
+                         |                         |
+                         v                         |
+               +-----------------+                 |
+               | Next.js proxy   |                 |
+               | POST /analyze   |                 |
+               +--------+--------+                 |
+                        |                          |
+             +----------v-----------+              |
+             | EigenCompute TEE     |              |
+             | (Hono server.ts)     |              |
+             | verifiable execution |              |
+             +----------+-----------+              |
+                        |                          |
+          +-------------v--------------------------v--+
+          |            runPipeline()                   |
+          +-------------------------------------------+
+                                |
+              WAVE 1: DATA      |
+              (parallel)        v
+        +------+------+------+------+
+        |      |      |      |      |
+        v      v      v      v      |
+     +------+------+------+------+  |
+     |data- |data- |data- |data- |  |
+     |onchain|github|social|gov   |  |
+     +--+---+--+---+--+---+--+---+  |
+        |      |      |      |      |
+        | Etherscan   | Dune  | Snapshot
+        | Alchemy     | GitHub| (Twitter
+        |      |      | API   |  fallback)
+        v      v      v      v
+     +------------------------------+
+     |       dataOutputs{}          |
+     | keyed by agent ID            |
+     +------+-----------+-----------+
+            |           |
+            | WAVE 2: EVAL (parallel)
+            | each agent sees ONLY its
+            | declared dataInputs
+            v
+     +------+------+------+------+
+     |eval- |eval- |eval- |eval- |
+     |onchain|dev  |social|gov   |
+     +--+---+--+---+--+---+--+---+
+        |      |      |      |
+        v      v      v      v
+     +------------------------------+
+     |    LayerAnalysis[] outputs   |
+     | score 0-100, signals, summary|
+     +-------------+----------------+
+                   |
+                   | WAVE 3: SYNTH (single)
+                   v
+     +------------------------------+
+     |     synth-integrity          |
+     | groups signals into vectors  |
+     | computes divergence score    |
+     | produces verdict + report    |
+     +-------------+----------------+
+                   |
+                   v
+     +------------------------------+
+     |      IntegrityReport         |
+     | score, verdict, vectors,     |
+     | layer scores, recommendations|
+     +------------------------------+
 ```
 
 ### The Divergence Formula
@@ -130,6 +151,10 @@ Every endpoint supports `{ "demo": true }` which runs the full pipeline against 
 
 Adding a new evaluation layer means creating one file and adding one import line. The orchestrator discovers it automatically. No route changes, no schema migrations, no pipeline rewiring.
 
+### Verifiable Execution via EigenCompute TEE
+
+The pipeline can run inside an EigenLayer Trusted Execution Environment (TEE) via EigenCompute. A standalone Hono server (`src/server.ts`) exposes the same `runPipeline()` over HTTP, packaged in a Docker container deployed to a TEE instance. The Next.js frontend proxies requests to the runner when `EIGENCOMPUTE_RUNNER_URL` is set, falling back to local execution when unset. This means every integrity score can be produced in a verifiable, attested compute environment -- the system that evaluates project integrity itself runs with cryptographic integrity guarantees.
+
 ---
 
 ## Inspired by Octant Council Builder
@@ -181,6 +206,7 @@ Twitter v2 API code is retained as fallback and activates automatically when Dun
 | Social | Dune Analytics SQL API, Twitter v2 (fallback) |
 | Governance | Snapshot GraphQL |
 | Validation | Zod |
+| Verifiable Compute | EigenCompute TEE (EigenLayer), Hono HTTP server |
 | UI | Tailwind CSS 4, Framer Motion |
 
 ---
@@ -206,6 +232,7 @@ ALCHEMY_RPC_URL=https://eth-mainnet.g.alchemy.com/v2/...
 DUNE_API_KEY=...
 TWITTER_BEARER_TOKEN=...               # fallback, requires Basic tier
 GITHUB_TOKEN=...                       # optional, higher rate limits
+EIGENCOMPUTE_RUNNER_URL=...            # optional, TEE runner endpoint
 ```
 
 ---
@@ -222,6 +249,19 @@ Demo mode (no API keys needed):
 curl -X POST http://localhost:3000/api/analyze \
   -H "Content-Type: application/json" \
   -d '{"projectName": "NexusNet", "demo": true}'
+```
+
+TEE runner (standalone pipeline server):
+```bash
+bun run runner    # starts Hono server on port 3001
+```
+
+Deploy to EigenCompute:
+```bash
+npm install -g @layr-labs/ecloud-cli
+ecloud auth login
+ecloud billing subscribe
+ecloud compute app deploy
 ```
 
 Live evaluation:

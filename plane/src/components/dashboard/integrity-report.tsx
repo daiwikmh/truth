@@ -37,7 +37,7 @@ const LAYER_LABELS = {
 const SEVERITY_COLORS = {
   low: "text-muted-foreground",
   medium: "text-[#eab308]",
-  high: "text-[#f97316]",
+  high: "text-[#a855f7]",
   critical: "text-[#ef4444]",
 };
 
@@ -73,7 +73,7 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
       >
         <button
           onClick={onBack}
-          className="flex items-center gap-1.5 text-[9px] font-mono tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 text-[13px] font-mono tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
         >
           <RotateCcw size={10} />
           NEW SCAN
@@ -83,10 +83,10 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
             <button
               onClick={onPublish}
               disabled={isPublished}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-[9px] font-mono tracking-widest uppercase transition-colors cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-mono tracking-widest uppercase transition-colors cursor-pointer ${
                 isPublished
                   ? "border border-[#22c55e] rounded-lg text-[#22c55e]"
-                  : "border border-[#ea580c] rounded-lg text-[#ea580c] hover:bg-[#ea580c] hover:text-background"
+                  : "border border-[#06b6d4] rounded-lg text-[#06b6d4] hover:bg-[#06b6d4] hover:text-background"
               }`}
             >
               <FileText size={10} />
@@ -95,7 +95,7 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
           )}
           <button
             onClick={exportMarkdown}
-            className="flex items-center gap-1.5 px-3 py-1.5 border border-foreground/20 rounded-lg text-[9px] font-mono tracking-widest uppercase hover:bg-foreground hover:text-background transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 border border-foreground/20 rounded-lg text-[13px] font-mono tracking-widest uppercase hover:bg-foreground hover:text-background transition-colors cursor-pointer"
           >
             <Download size={10} />
             EXPORT
@@ -113,12 +113,12 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
         {/* Title */}
         <div className="flex items-center justify-between border-b border-foreground/10 px-3 py-1.5">
           <div className="flex items-center gap-1.5">
-            <Shield size={10} className="text-[#ea580c]" />
-            <span className="text-[9px] tracking-widest text-muted-foreground uppercase font-mono">
-              report.integrity
+            <Shield size={10} className="text-[#06b6d4]" />
+            <span className="text-[13px] tracking-widest text-muted-foreground uppercase font-mono">
+              dope.report
             </span>
           </div>
-          <span className="text-[9px] tracking-widest text-muted-foreground font-mono tabular-nums">
+          <span className="text-[13px] tracking-widest text-muted-foreground font-mono tabular-nums">
             {new Date().toISOString().split("T")[0]}
           </span>
         </div>
@@ -136,10 +136,10 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
           {/* Summary + Layers */}
           <div className="flex-1 flex flex-col">
             <div className="px-4 py-3 border-b border-foreground/15 flex-1">
-              <span className="text-[8px] tracking-[0.2em] uppercase text-muted-foreground font-mono block mb-1.5">
+              <span className="text-[12px] tracking-[0.2em] uppercase text-muted-foreground font-mono block mb-1.5">
                 SUMMARY
               </span>
-              <p className="text-[11px] font-mono text-foreground leading-relaxed">
+              <p className="text-[13px] font-mono text-foreground leading-relaxed">
                 {report.executiveSummary}
               </p>
             </div>
@@ -165,11 +165,15 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
                   >
                     <div className="flex items-center gap-1 mb-1.5">
                       <Icon size={9} className="text-muted-foreground" />
-                      <span className="text-[7px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
+                      <span className="text-[13px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
                         {LAYER_LABELS[layer]}
                       </span>
                     </div>
-                    <MiniGauge label="" score={score} />
+                    {score >= 0 ? (
+                      <MiniGauge label="" score={score} />
+                    ) : (
+                      <span className="text-[11px] font-mono text-muted-foreground/30 tracking-wider">NO DATA</span>
+                    )}
                   </motion.div>
                 );
               })}
@@ -186,8 +190,8 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
         className="border border-foreground/15 rounded-xl overflow-hidden mt-3"
       >
         <div className="flex items-center gap-2 px-3 py-1.5 border-b border-foreground/10">
-          <AlertTriangle size={10} className="text-[#ea580c]" />
-          <span className="text-[9px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
+          <AlertTriangle size={10} className="text-[#06b6d4]" />
+          <span className="text-[13px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
             VECTORS
           </span>
           <div className="flex-1 border-t border-foreground/10" />
@@ -211,10 +215,10 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
                 <span className="text-muted-foreground/50">
                   {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
                 </span>
-                <span className="flex-1 text-left text-[11px] font-mono font-bold">
+                <span className="flex-1 text-left text-[13px] font-mono font-bold">
                   {vector.theme}
                 </span>
-                <span className="px-1.5 py-0.5 text-[8px] font-mono font-bold bg-foreground text-background rounded-md">
+                <span className="px-1.5 py-0.5 text-[12px] font-mono font-bold bg-foreground text-background rounded-md">
                   {gap}%
                 </span>
               </button>
@@ -229,17 +233,17 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
                     className="overflow-hidden"
                   >
                     <div className="px-3 pb-3 ml-5">
-                      <p className="text-[10px] font-mono text-muted-foreground leading-relaxed mb-3">
+                      <p className="text-[12px] font-mono text-muted-foreground leading-relaxed mb-3">
                         {vector.summary}
                       </p>
 
                       {/* Divergence bar */}
                       <div className="mb-3">
                         <div className="flex items-center justify-between mb-0.5">
-                          <span className="text-[7px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
+                          <span className="text-[13px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
                             CLAIMED {(vector.claimedPerformance * 100).toFixed(0)}
                           </span>
-                          <span className="text-[7px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
+                          <span className="text-[13px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
                             OBSERVED {(vector.observedReality * 100).toFixed(0)}
                           </span>
                         </div>
@@ -260,17 +264,17 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
                         {vector.signals.map((signal, j) => (
                           <div
                             key={j}
-                            className="flex items-start gap-2 py-1 text-[10px] font-mono"
+                            className="flex items-start gap-2 py-1 text-[12px] font-mono"
                           >
                             <span
-                              className={`shrink-0 w-12 uppercase text-[8px] tracking-wider ${SEVERITY_COLORS[signal.severity]}`}
+                              className={`shrink-0 w-12 uppercase text-[12px] tracking-wider ${SEVERITY_COLORS[signal.severity]}`}
                             >
                               {signal.severity}
                             </span>
                             <span className="text-foreground/80 flex-1">
                               {signal.text}
                             </span>
-                            <span className="text-muted-foreground/50 shrink-0 text-[8px] tabular-nums">
+                            <span className="text-muted-foreground/50 shrink-0 text-[12px] tabular-nums">
                               {(signal.confidence * 100).toFixed(0)}%
                             </span>
                           </div>
@@ -293,7 +297,7 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
         className="border border-foreground/15 rounded-xl overflow-hidden mt-3"
       >
         <div className="flex items-center gap-2 px-3 py-1.5 border-b border-foreground/10">
-          <span className="text-[9px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
+          <span className="text-[13px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
             // recommendations
           </span>
         </div>
@@ -306,10 +310,10 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
               transition={{ delay: 0.4 + i * 0.06, duration: 0.3, ease }}
               className="flex items-start gap-2 px-3 py-2 border-b border-foreground/5 last:border-b-0"
             >
-              <span className="text-[9px] font-mono text-[#ea580c] shrink-0 tabular-nums">
+              <span className="text-[13px] font-mono text-[#06b6d4] shrink-0 tabular-nums">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <span className="text-[10px] font-mono text-foreground/80 leading-relaxed">
+              <span className="text-[12px] font-mono text-foreground/80 leading-relaxed">
                 {rec}
               </span>
             </motion.div>
@@ -331,7 +335,7 @@ function generateMarkdown(report: ReportType): string {
     `| Layer | Score |`,
     `|-------|-------|`,
     ...Object.entries(report.layerScores).map(
-      ([layer, score]) => `| ${layer.charAt(0).toUpperCase() + layer.slice(1)} | ${score}/100 |`
+      ([layer, score]) => `| ${layer.charAt(0).toUpperCase() + layer.slice(1)} | ${score >= 0 ? `${score}/100` : "N/A"} |`
     ),
     ``,
     `### Impact Vectors\n`,
@@ -359,7 +363,7 @@ function generateMarkdown(report: ReportType): string {
   });
 
   lines.push(
-    `\n---\n_Generated by Integrity Score — AI Agent for Public Goods Evaluation_`
+    `\n---\n_Generated by Dope — AI Agent for Public Goods Evaluation_`
   );
 
   return lines.join("\n");

@@ -1,10 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Inter } from "next/font/google";
+import { Space_Grotesk, Inter, IBM_Plex_Mono } from "next/font/google";
 import { ThemeProvider } from "@/src/components/shared/theme-provider";
 import "./globals.css";
 
-const jetbrainsMono = JetBrains_Mono({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
+  variable: "--font-heading",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-mono",
 });
 
@@ -14,9 +20,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Project Integrity Score | Public Goods Evaluation Agent",
+  title: "Dope | Department of Project Efficiency",
   description:
-    "AI-powered integrity scoring for DePIN and public goods projects. Multi-layer analysis across on-chain, development, social, and governance data.",
+    "AI-powered project evaluation for DePIN and public goods. Multi-layer analysis across on-chain, development, social, and governance data.",
 };
 
 export const viewport: Viewport = {
@@ -34,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${jetbrainsMono.variable} ${inter.variable}`}
+      className={`${spaceGrotesk.variable} ${ibmPlexMono.variable} ${inter.variable}`}
       suppressHydrationWarning
     >
       <body className="font-sans antialiased">

@@ -41,20 +41,20 @@ export function ActivityLog({ logs }: ActivityLogProps) {
   return (
     <div className="border border-foreground/15 rounded-xl h-full flex flex-col overflow-hidden">
       <div className="flex items-center justify-between border-b border-foreground/10 px-3 py-1.5">
-        <span className="text-[9px] tracking-widest text-muted-foreground uppercase font-mono">
+        <span className="text-[11px] tracking-widest text-muted-foreground uppercase font-mono">
           stdout
         </span>
-        <span className="text-[9px] tracking-widest text-muted-foreground font-mono tabular-nums">
+        <span className="text-[11px] tracking-widest text-muted-foreground font-mono tabular-nums">
           {logs.length}
         </span>
       </div>
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto font-mono text-[10px] leading-[1.6] bg-foreground/[0.02]"
+        className="flex-1 overflow-y-auto font-mono text-[12px] leading-[1.6] bg-foreground/[0.02]"
       >
         {logs.length === 0 ? (
           <div className="px-3 py-6 text-center">
-            <span className="text-[9px] font-mono tracking-widest text-muted-foreground/40 uppercase">
+            <span className="text-[11px] font-mono tracking-widest text-muted-foreground/40 uppercase">
               $ awaiting input_
             </span>
           </div>

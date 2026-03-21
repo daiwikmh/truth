@@ -21,9 +21,9 @@ export function Navbar() {
             transition={{ delay: 0.2, duration: 0.4 }}
             className="flex items-center gap-3"
           >
-            <Shield size={16} className="text-[#ea580c]" />
-            <span className="text-xs font-mono tracking-[0.15em] uppercase font-bold">
-              INTEGRITY SCORE
+            <Shield size={18} className="text-[#06b6d4]" />
+            <span className="text-sm font-mono tracking-[0.15em] uppercase font-bold">
+              DOPE
             </span>
           </motion.div>
 
@@ -31,7 +31,7 @@ export function Navbar() {
             {["Analyze", "Methodology", "About"].map((link, i) => (
               <motion.a
                 key={link}
-                href="#"
+                href="http://localhost:3000/dashboard"
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
@@ -39,7 +39,7 @@ export function Navbar() {
                   duration: 0.4,
                   ease: EASE,
                 }}
-                className="text-xs font-mono tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors duration-200"
+                className="text-sm font-mono tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors duration-200"
               >
                 {link}
               </motion.a>

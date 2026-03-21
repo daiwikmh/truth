@@ -4,14 +4,20 @@ import type { GithubData } from "../sample-data";
 import type { EvalAgentConfig } from "./registry";
 
 async function analyzeDevelopment(data: GithubData): Promise<LayerAnalysis> {
-  const system = `You are a software development analyst evaluating DePIN/public goods projects. Your role is to objectively assess development health and flag red flags like zombie repos, fake activity, copy-paste codebases, or single-contributor dependency. Do NOT make funding recommendations — just report what the data shows. Respond ONLY with valid JSON — no markdown, no explanation outside the JSON.`;
+  const system = `You are a software development analyst evaluating DePIN/public goods projects. Your role is to objectively assess development health and flag red flags like zombie repos, fake activity, copy-paste codebases, or single-contributor dependency. Do NOT make funding recommendations — just report what the data shows. Respond ONLY with valid JSON — no markdown, no explanation outside the JSON.
+
+CRITICAL RULES:
+- Large open-source protocols (Aave, Uniswap, etc.) naturally have many open issues. A high open issue count on an active repo is normal for popular projects, not a red flag.
+- The avg issue age metric measures open issues from the last 90 days only. If it shows 0h, it means no recent issues are open, which is fine.
+- Focus on ACTIVITY signals: recent commits, contributor diversity, and last commit recency are the strongest indicators. A repo with 80+ commits in 90d and a recent last commit is actively maintained.
+- Top contributor percentage: below 40% is healthy for large projects; above 80% is concerning.`;
 
   const prompt = `Analyze these GitHub metrics and return a JSON object:
 
 - Commits (90d): ${data.commitsLast90Days}, last commit: ${data.lastCommitDaysAgo} days ago
 - Contributors: ${data.contributors}, top contributor: ${data.topContributorPercent}%
 - Stars: ${data.stars}, forks: ${data.forks}
-- Open issues: ${data.openIssues}, avg response: ${data.avgIssueResponseHours}h
+- Open issues: ${data.openIssues}, avg recent issue age: ${data.avgIssueResponseHours}h
 - Repo: ${data.repoName}
 
 A project with high stars but very low recent activity is a major red flag ("zombie repo").

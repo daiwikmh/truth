@@ -10,10 +10,38 @@ export async function POST(request: NextRequest) {
     const body: ProjectInput & { demo?: boolean } = await request.json();
 
     const isDemoMode = !process.env.OPENROUTER_API_KEY;
+    const runnerUrl = process.env.EIGENCOMPUTE_RUNNER_URL;
     let report;
+    let dataOutputs: Record<string, unknown> = {};
+    let evalOutputs: unknown[] = [];
 
     if (isDemoMode) {
-      report = getDemoReport(body.projectName);
+      const demo = getDemoResult(body.projectName);
+      report = demo.report;
+      dataOutputs = demo.dataOutputs;
+      evalOutputs = demo.evalOutputs;
+    } else if (runnerUrl) {
+      const res = await fetch(`${runnerUrl}/analyze`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          project: {
+            name: body.projectName,
+            tokenAddress: body.tokenAddress,
+            chain: body.chain,
+            contracts: body.contracts,
+            githubUrl: body.githubUrl,
+            twitterHandle: body.twitterHandle,
+            governanceSpace: body.governanceSpace,
+          },
+          isDemo: !!body.demo,
+        }),
+      });
+      if (!res.ok) throw new Error(`Runner returned ${res.status}`);
+      const result = await res.json();
+      report = result.report;
+      dataOutputs = result.dataOutputs ?? {};
+      evalOutputs = result.evalOutputs ?? [];
     } else {
       const result = await runPipeline(
         {
@@ -28,6 +56,8 @@ export async function POST(request: NextRequest) {
         !!body.demo
       );
       report = result.report;
+      dataOutputs = result.dataOutputs;
+      evalOutputs = result.evalOutputs;
     }
 
     // persist to DB for comparison support
@@ -47,7 +77,7 @@ export async function POST(request: NextRequest) {
       console.error("DB persist skipped:", e);
     }
 
-    return NextResponse.json({ ...report, projectId });
+    return NextResponse.json({ ...report, projectId, dataOutputs, evalOutputs });
   } catch (error) {
     console.error("Analysis error:", error);
     return NextResponse.json(
@@ -57,8 +87,8 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function getDemoReport(projectName: string) {
-  return {
+function getDemoResult(projectName: string) {
+  const report = {
     projectName: projectName || "NexusNet (Demo)",
     integrityScore: 34,
     verdict: "critical" as const,
@@ -117,4 +147,20 @@ function getDemoReport(projectName: string) {
       "Community sentiment is strongly negative (0.35/1.0) with unaddressed complaints about performance and censorship.",
     ],
   };
+
+  const dataOutputs: Record<string, unknown> = {
+    "data-onchain": { tokenHolders: [{ address: "0x1a2b..3c4d", percentage: 42.1 }, { address: "0x5e6f..7g8h", percentage: 22.3 }], top10HoldersPercent: 84.7, uptimePercent: 99.9, dailyTransactions: 34, tokenVelocity: 0.12, contractAge: 412, totalSupply: "1,000,000,000" },
+    "data-github": { repoName: "nexusnet-core", stars: 2840, forks: 312, commitsLast90Days: 9, contributors: 3, topContributorPercent: 78, openIssues: 142, avgIssueResponseHours: 720, lastCommitDaysAgo: 21 },
+    "data-social": { twitterFollowers: 12400, avgEngagementRate: 1.2, sentimentScore: 0.35, botLikelihoodPercent: 22, recentMentions: [{ text: "API latency way worse than docs claim", sentiment: "negative" }], communityComplaints: ["Latency issues", "Token dumping"] },
+    "data-governance": { totalProposals: 24, proposalPassRate: 95.8, avgVoterTurnout: 3.2, top5VotersPercent: 91.3, avgTimeToQuorumHours: 2.1, recentProposals: [{ title: "Increase team allocation 5%", passed: true, turnout: 2.8 }] },
+  };
+
+  const evalOutputs = [
+    { layer: "onchain", score: 42, summary: "Token concentration is extreme with 84.7% held by top 10 wallets. Transaction velocity is low.", signals: [{ text: "Top 10 holders control 84.7% of supply", severity: "critical", source: "Etherscan", confidence: 0.97 }] },
+    { layer: "development", score: 18, summary: "Zombie repo pattern with only 9 commits in 90 days from a single contributor.", signals: [{ text: "9 commits in 90 days", severity: "critical", source: "GitHub", confidence: 0.95 }, { text: "142 open issues, 30d avg response", severity: "high", source: "GitHub", confidence: 0.88 }] },
+    { layer: "social", score: 28, summary: "Sentiment 0.35/1.0 with 22% estimated bot followers.", signals: [{ text: "22% bot likelihood", severity: "medium", source: "Social analysis", confidence: 0.7 }] },
+    { layer: "governance", score: 15, summary: "Top 5 voters control 91.3% with 95.8% pass rate at 3.2% turnout.", signals: [{ text: "91.3% whale capture", severity: "critical", source: "Snapshot", confidence: 0.96 }] },
+  ];
+
+  return { report, dataOutputs, evalOutputs };
 }

@@ -44,7 +44,7 @@ export function FeatureGrid() {
               i % 2 === 0 ? "md:border-r-2" : ""
             } ${i < 2 ? "border-b-2" : ""} border-foreground`}
           >
-            <span className="text-[10px] tracking-[0.2em] uppercase text-[#ea580c] font-mono mb-3">
+            <span className="text-[10px] tracking-[0.2em] uppercase text-[#06b6d4] font-mono mb-3">
               {f.label}
             </span>
             <p className="text-xs font-mono text-muted-foreground leading-relaxed">

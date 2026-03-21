@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { EASE } from "@/src/config/constants";
+import Image from "next/image";
+
 
 export function HeroSection() {
   return (
@@ -24,33 +26,8 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 0.15, ease: EASE }}
           className="w-full max-w-lg my-4 lg:my-6 border-2 border-foreground"
         >
-          <div className="flex items-center justify-between border-b-2 border-foreground px-4 py-2">
-            <span className="text-[10px] tracking-widest text-muted-foreground uppercase font-mono">
-              agent_pipeline.sys
-            </span>
-            <span className="text-[10px] tracking-widest text-[#ea580c] animate-blink font-mono">
-              LIVE
-            </span>
-          </div>
-          <pre className="text-[8px] sm:text-[10px] leading-[1.4] font-mono px-4 py-4 text-foreground/80 select-none overflow-x-auto">
-{`  ┌──────────────────────────────────┐
-  │       ORCHESTRATOR AGENT         │
-  └──┬───────┬───────┬───────┬──────┘
-     │       │       │       │
-     ▼       ▼       ▼       ▼
-  ┌─────┐┌─────┐┌─────┐┌──────┐
-  │CHAIN││ DEV ││SOCIAL││ GOV  │
-  │AGENT││AGENT││AGENT ││AGENT │
-  └──┬──┘└──┬──┘└──┬──┘└──┬───┘
-     │       │       │       │
-     ▼       ▼       ▼       ▼
-  ┌──────────────────────────────────┐
-  │     SYNTHESIS ENGINE             │
-  │  Recursive Summarization ×3     │
-  │  Micro-Signals → Impact Vectors │
-  │  → Divergence Gap Scoring       │
-  └──────────────────────────────────┘`}
-          </pre>
+        <Image src="/dope.png" alt="Octant" width={800} height={50} className="opacity-70" />
+        
         </motion.div>
 
         <motion.h1
@@ -60,7 +37,7 @@ export function HeroSection() {
           className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl tracking-tight text-foreground mb-4 select-none font-bold"
           aria-hidden="true"
         >
-          FUND.
+          DOPE.
         </motion.h1>
 
         <motion.p
@@ -85,7 +62,7 @@ export function HeroSection() {
             href="/dashboard"
             className="group flex items-center gap-0 bg-foreground text-background text-sm font-mono tracking-wider uppercase"
           >
-            <span className="flex items-center justify-center w-10 h-10 bg-[#ea580c]">
+            <span className="flex items-center justify-center w-10 h-10 bg-[#06b6d4]">
               <ArrowRight
                 size={16}
                 strokeWidth={2}

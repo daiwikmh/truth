@@ -33,11 +33,11 @@ export function ProjectCard({ report, index, onClick }: ProjectCardProps) {
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-foreground/15 px-4 py-2.5">
-        <span className="text-[11px] font-mono font-bold tracking-wider uppercase truncate">
+        <span className="text-[13px] font-mono font-bold tracking-wider uppercase truncate">
           {report.projectName}
         </span>
         <span
-          className="text-[9px] font-mono font-bold tracking-[0.15em]"
+          className="text-[13px] font-mono font-bold tracking-[0.15em]"
           style={{ color }}
         >
           {verdict}
@@ -53,11 +53,11 @@ export function ProjectCard({ report, index, onClick }: ProjectCardProps) {
           >
             {report.integrityScore}
           </span>
-          <span className="text-[7px] tracking-[0.2em] uppercase text-muted-foreground mt-1">
+          <span className="text-[13px] tracking-[0.2em] uppercase text-muted-foreground mt-1">
             SCORE
           </span>
         </div>
-        <p className="text-[10px] font-mono text-muted-foreground leading-relaxed line-clamp-3">
+        <p className="text-[12px] font-mono text-muted-foreground leading-relaxed line-clamp-3">
           {report.executiveSummary}
         </p>
       </div>
@@ -66,19 +66,26 @@ export function ProjectCard({ report, index, onClick }: ProjectCardProps) {
       <div className="grid grid-cols-4 border-t border-foreground/15">
         {Object.entries(report.layerScores).map(([layer, score]) => {
           const Icon = LAYER_ICONS[layer] ?? Activity;
-          const lColor = getScoreColor(score);
+          const available = score >= 0;
+          const lColor = available ? getScoreColor(score) : undefined;
           return (
             <div
               key={layer}
               className="flex items-center gap-1.5 px-3 py-2 border-r last:border-r-0 border-foreground/10"
             >
               <Icon size={10} className="text-muted-foreground/50 shrink-0" />
-              <span
-                className="text-[10px] font-mono font-bold"
-                style={{ color: lColor, fontVariantNumeric: "tabular-nums" }}
-              >
-                {score}
-              </span>
+              {available ? (
+                <span
+                  className="text-[12px] font-mono font-bold"
+                  style={{ color: lColor, fontVariantNumeric: "tabular-nums" }}
+                >
+                  {score}
+                </span>
+              ) : (
+                <span className="text-[10px] font-mono text-muted-foreground/30 tracking-wider">
+                  N/A
+                </span>
+              )}
             </div>
           );
         })}

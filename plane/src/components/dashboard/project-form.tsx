@@ -127,12 +127,12 @@ export function ProjectForm({ onSubmit, loading }: ProjectFormProps) {
     >
       {/* Header bar */}
       <div className="flex items-center justify-between border-b border-foreground/10 px-4 py-2">
-        <span className="text-[10px] tracking-widest text-muted-foreground uppercase font-mono">
+        <span className="text-[12px] tracking-widest text-muted-foreground uppercase font-mono">
           project_input.cfg
         </span>
         <button
           onClick={fillDemo}
-          className="text-[10px] tracking-widest text-[#ea580c] uppercase font-mono hover:underline cursor-pointer"
+          className="text-[12px] tracking-widest text-[#06b6d4] uppercase font-mono hover:underline cursor-pointer"
         >
           LOAD DEMO
         </button>
@@ -154,10 +154,10 @@ export function ProjectForm({ onSubmit, loading }: ProjectFormProps) {
                 <Icon size={14} className="text-muted-foreground" />
               </div>
               <div className="flex-1 flex flex-col px-3 py-2">
-                <label className="text-[8px] tracking-[0.2em] uppercase text-muted-foreground font-mono mb-0.5">
+                <label className="text-[12px] tracking-[0.2em] uppercase text-muted-foreground font-mono mb-0.5">
                   {field.label}
                   {field.required && (
-                    <span className="text-[#ea580c] ml-1">*</span>
+                    <span className="text-[#06b6d4] ml-1">*</span>
                   )}
                 </label>
                 <input
@@ -178,12 +178,12 @@ export function ProjectForm({ onSubmit, loading }: ProjectFormProps) {
       {/* Contracts section */}
       <div className="border-b border-foreground/20">
         <div className="flex items-center justify-between px-4 py-2 border-b border-foreground/10">
-          <span className="text-[8px] tracking-[0.2em] uppercase text-muted-foreground font-mono">
+          <span className="text-[12px] tracking-[0.2em] uppercase text-muted-foreground font-mono">
             CONTRACTS
           </span>
           <button
             onClick={addContract}
-            className="flex items-center gap-1 text-[8px] font-mono tracking-wider uppercase text-[#ea580c] hover:underline cursor-pointer"
+            className="flex items-center gap-1 text-[12px] font-mono tracking-wider uppercase text-[#06b6d4] hover:underline cursor-pointer"
           >
             <Plus size={10} />
             ADD
@@ -202,7 +202,7 @@ export function ProjectForm({ onSubmit, loading }: ProjectFormProps) {
             </div>
             <div className="flex-1 flex gap-2 px-3 py-2">
               <div className="w-24 shrink-0">
-                <label className="text-[7px] tracking-[0.15em] uppercase text-muted-foreground/50 font-mono block mb-0.5">
+                <label className="text-[9px] tracking-[0.15em] uppercase text-muted-foreground/50 font-mono block mb-0.5">
                   LABEL
                 </label>
                 <input
@@ -214,7 +214,7 @@ export function ProjectForm({ onSubmit, loading }: ProjectFormProps) {
                 />
               </div>
               <div className="flex-1">
-                <label className="text-[7px] tracking-[0.15em] uppercase text-muted-foreground/50 font-mono block mb-0.5">
+                <label className="text-[9px] tracking-[0.15em] uppercase text-muted-foreground/50 font-mono block mb-0.5">
                   ADDRESS
                 </label>
                 <input
@@ -226,7 +226,7 @@ export function ProjectForm({ onSubmit, loading }: ProjectFormProps) {
                 />
               </div>
               <div className="w-20 shrink-0">
-                <label className="text-[7px] tracking-[0.15em] uppercase text-muted-foreground/50 font-mono block mb-0.5">
+                <label className="text-[9px] tracking-[0.15em] uppercase text-muted-foreground/50 font-mono block mb-0.5">
                   CHAIN
                 </label>
                 <input
@@ -271,7 +271,7 @@ export function ProjectForm({ onSubmit, loading }: ProjectFormProps) {
           whileTap={{ scale: 0.98 }}
           onClick={() => handleSubmit(false)}
           disabled={loading || !form.projectName}
-          className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#ea580c] text-white text-xs font-mono tracking-widest uppercase disabled:opacity-40 cursor-pointer"
+          className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#06b6d4] text-white text-xs font-mono tracking-widest uppercase disabled:opacity-40 cursor-pointer"
         >
           {loading ? (
             <Loader2 size={14} className="animate-spin" />

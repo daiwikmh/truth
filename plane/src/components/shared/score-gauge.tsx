@@ -69,7 +69,7 @@ export function ScoreGauge({ score, size = 200 }: ScoreGaugeProps) {
           {displayed}
         </span>
         <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mt-1">
-          INTEGRITY
+          DOPE
         </span>
         <span
           className="text-xs font-mono font-bold tracking-widest mt-1"

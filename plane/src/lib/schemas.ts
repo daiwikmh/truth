@@ -51,7 +51,7 @@ export const IntegrityReport = z.object({
     .max(100)
     .describe("Overall integrity score 0-100"),
   verdict: z
-    .enum(["strong", "moderate", "weak", "critical"])
+    .enum(["exceptional", "strong", "moderate", "critical"])
     .describe("Overall project health verdict"),
   executiveSummary: z
     .string()

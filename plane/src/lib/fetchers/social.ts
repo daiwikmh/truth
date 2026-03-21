@@ -49,9 +49,9 @@ function buildDuneQuery(tokenAddress: string): string {
   return `
     WITH trades AS (
       SELECT tx_from, amount_usd,
-        CASE WHEN token_bought_address = ${addr} THEN 'buy' ELSE 'sell' END as side
+        CASE WHEN token_bought_address = 0x${addr.replace("0x", "")} THEN 'buy' ELSE 'sell' END as side
       FROM dex.trades
-      WHERE (token_bought_address = ${addr} OR token_sold_address = ${addr})
+      WHERE (token_bought_address = 0x${addr.replace("0x", "")} OR token_sold_address = 0x${addr.replace("0x", "")})
         AND block_time > now() - interval '30' day
         AND amount_usd > 0
     ),

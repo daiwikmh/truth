@@ -160,6 +160,31 @@ export async function getActivityByProject(
     .orderBy(desc(activityEvents.eventTimestamp));
 }
 
+// ── Projects with Scores (for Explore cross-ref) ─────────
+
+export async function listProjectsWithScores() {
+  const rows = await db
+    .select({
+      id: projects.id,
+      name: projects.name,
+      tokenAddress: projects.tokenAddress,
+      contracts: projects.contracts,
+      integrityScore: evaluations.integrityScore,
+      verdict: evaluations.verdict,
+    })
+    .from(projects)
+    .innerJoin(evaluations, eq(evaluations.projectId, projects.id))
+    .orderBy(desc(evaluations.createdAt));
+
+  // dedupe to latest evaluation per project
+  const seen = new Set<string>();
+  return rows.filter((r) => {
+    if (seen.has(r.id)) return false;
+    seen.add(r.id);
+    return true;
+  });
+}
+
 // ── Pairwise Comparisons ─────────────────────────────────
 
 export async function createComparison(input: {

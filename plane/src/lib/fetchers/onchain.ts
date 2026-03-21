@@ -51,27 +51,40 @@ async function rpcCall(
 
 export async function fetchOnchainData(
   tokenAddress: string,
-  chain: string = "ethereum"
+  chain: string = "ethereum",
+  contractLabel: string = "Token"
 ): Promise<OnchainData> {
   const rpcUrl = RPC_URLS[chain] || RPC_URLS.ethereum;
   const addr = tokenAddress.toLowerCase();
+  const isTokenContract = contractLabel.toLowerCase().includes("token");
 
-  // Parallel fetch: token transfers, total supply, contract code, contract creation
+  // Fetch token transfers only for token contracts; for pools use normal txlist
   const [txListResult, totalSupplyResult, codeResult, creationResult] =
     await Promise.allSettled([
-      etherscanV2(chain, {
-        module: "account",
-        action: "tokentx",
-        contractaddress: addr,
-        page: "1",
-        offset: "100",
-        sort: "desc",
-      }),
-      etherscanV2(chain, {
-        module: "stats",
-        action: "tokensupply",
-        contractaddress: addr,
-      }),
+      isTokenContract
+        ? etherscanV2(chain, {
+            module: "account",
+            action: "tokentx",
+            contractaddress: addr,
+            page: "1",
+            offset: "100",
+            sort: "desc",
+          })
+        : etherscanV2(chain, {
+            module: "account",
+            action: "txlist",
+            address: addr,
+            page: "1",
+            offset: "100",
+            sort: "desc",
+          }),
+      isTokenContract
+        ? etherscanV2(chain, {
+            module: "stats",
+            action: "tokensupply",
+            contractaddress: addr,
+          })
+        : Promise.resolve({ status: "0", message: "N/A", result: "0" }),
       rpcCall(rpcUrl, "eth_getCode", [addr, "latest"]),
       etherscanV2(chain, {
         module: "contract",
@@ -178,5 +191,6 @@ export async function fetchOnchainData(
     tokenVelocity,
     contractAge: contractAgeDays,
     totalSupply: totalSupplyFormatted,
+    contractType: isTokenContract ? "token" : "pool/protocol",
   };
 }

@@ -34,6 +34,7 @@ export interface OnchainData {
   tokenVelocity: number;
   contractAge: number;
   totalSupply: string;
+  contractType?: string;
   contracts?: OnchainContractData[];
 }
 

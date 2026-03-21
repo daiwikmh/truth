@@ -33,7 +33,7 @@ export function SettingsView() {
   if (!data) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <span className="text-[10px] font-mono text-muted-foreground/50 animate-pulse">
+        <span className="text-[12px] font-mono text-muted-foreground/50 animate-pulse">
           LOADING...
         </span>
       </div>
@@ -55,10 +55,10 @@ export function SettingsView() {
                   configured ? "bg-green-500" : "bg-red-500/60"
                 }`}
               />
-              <span className="text-[10px] font-mono tracking-wider uppercase">
+              <span className="text-[12px] font-mono tracking-wider uppercase">
                 {KEY_LABELS[key] ?? key}
               </span>
-              <span className="text-[9px] font-mono text-muted-foreground/50 ml-auto">
+              <span className="text-[13px] font-mono text-muted-foreground/50 ml-auto">
                 {configured ? "configured" : "not set"}
               </span>
             </div>
@@ -69,7 +69,7 @@ export function SettingsView() {
     {
       label: "MODEL",
       content: (
-        <span className="text-[11px] font-mono text-muted-foreground/80 break-all">
+        <span className="text-[13px] font-mono text-muted-foreground/80 break-all">
           {data.model}
         </span>
       ),
@@ -77,7 +77,7 @@ export function SettingsView() {
     {
       label: "PIPELINE",
       content: (
-        <span className="text-[11px] font-mono text-muted-foreground/80">
+        <span className="text-[13px] font-mono text-muted-foreground/80">
           {data.agentCount} agents / {data.waves} waves
         </span>
       ),
@@ -91,7 +91,7 @@ export function SettingsView() {
               data.database ? "bg-green-500" : "bg-red-500/60"
             }`}
           />
-          <span className="text-[11px] font-mono text-muted-foreground/80">
+          <span className="text-[13px] font-mono text-muted-foreground/80">
             {data.database ? "Neon Postgres connected" : "not configured"}
           </span>
         </div>
@@ -106,7 +106,7 @@ export function SettingsView() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: EASE }}
     >
-      <span className="text-[9px] tracking-[0.2em] uppercase text-muted-foreground font-mono block mb-6">
+      <span className="text-[13px] tracking-[0.2em] uppercase text-muted-foreground font-mono block mb-6">
         SETTINGS
       </span>
 
@@ -119,7 +119,7 @@ export function SettingsView() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: i * 0.06, ease: EASE }}
           >
-            <span className="text-[9px] tracking-[0.2em] uppercase text-muted-foreground font-mono block mb-3">
+            <span className="text-[13px] tracking-[0.2em] uppercase text-muted-foreground font-mono block mb-3">
               {section.label}
             </span>
             {section.content}

@@ -15,7 +15,7 @@ export function Footer() {
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="flex flex-col gap-1">
           <span className="text-xs font-mono tracking-[0.15em] uppercase font-bold text-foreground">
-            PROJECT INTEGRITY SCORE
+            DOPE
           </span>
           <span className="text-[10px] font-mono tracking-widest text-muted-foreground">
             {"AGENTS FOR PUBLIC GOODS // DATA ANALYSIS FOR PROJECT EVALUATION"}

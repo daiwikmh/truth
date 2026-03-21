@@ -15,8 +15,11 @@ import { BlogPost } from "@/src/components/dashboard/blog-post";
 import { CompareView } from "@/src/components/dashboard/compare-view";
 import { AgentsView } from "@/src/components/dashboard/agents-view";
 import { SettingsView } from "@/src/components/dashboard/settings-view";
+import { WalletView } from "@/src/components/dashboard/wallet-view";
+import { ExploreView } from "@/src/components/dashboard/explore-view";
 import { EASE } from "@/src/config/constants";
 import type { IntegrityReport } from "@/src/lib/schemas";
+import type { ScanResult } from "@/src/lib/scan-result";
 
 interface BlogEntry {
   report: IntegrityReport;
@@ -54,9 +57,8 @@ export default function DashboardPage() {
   });
   const [signalsDetected, setSignalsDetected] = useState(0);
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [evaluations, setEvaluations] = useState<
-    (IntegrityReport & { projectId?: string })[]
-  >([]);
+  const [scans, setScans] = useState<ScanResult[]>([]);
+  const [selectedAgentScanIndex, setSelectedAgentScanIndex] = useState(0);
   const [blogEntries, setBlogEntries] = useState<BlogEntry[]>([]);
   const [viewingBlogPost, setViewingBlogPost] = useState<BlogEntry | null>(null);
 
@@ -144,18 +146,23 @@ export default function DashboardPage() {
       setReport(result);
       setPhase("report");
 
-      // Store evaluation for dashboard
-      setEvaluations((prev) => {
+      const scanResult: ScanResult = {
+        report: result,
+        dataOutputs: result.dataOutputs ?? {},
+        evalOutputs: result.evalOutputs ?? [],
+      };
+      setScans((prev) => {
         const exists = prev.some(
-          (e) => e.projectName === result.projectName
+          (s) => s.report.projectName === result.projectName
         );
         if (exists) {
-          return prev.map((e) =>
-            e.projectName === result.projectName ? result : e
+          return prev.map((s) =>
+            s.report.projectName === result.projectName ? scanResult : s
           );
         }
-        return [result, ...prev];
+        return [scanResult, ...prev];
       });
+      setSelectedAgentScanIndex(0);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Unknown error";
       setError(msg);
@@ -318,7 +325,7 @@ export default function DashboardPage() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="mx-4 mt-2 px-3 py-1.5 border border-[#ef4444] text-[#ef4444] text-[10px] font-mono flex items-center justify-between"
+              className="mx-4 mt-2 px-3 py-1.5 border border-[#ef4444] text-[#ef4444] text-[12px] font-mono flex items-center justify-between"
             >
               <span>ERR: {error}</span>
               <button
@@ -336,12 +343,13 @@ export default function DashboardPage() {
           {/* ── DASHBOARD TAB ── */}
           {showDashboard && (
             <DashboardView
-              evaluations={evaluations}
+              scans={scans}
               onSelectReport={handleViewReport}
               onNewScan={() => {
                 handleReset();
                 setActiveTab("analysis");
               }}
+              onCompare={() => setActiveTab("compare")}
             />
           )}
 
@@ -372,11 +380,11 @@ export default function DashboardPage() {
                 >
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-16 border-t border-foreground/15" />
-                    <span className="text-[9px] tracking-[0.2em] uppercase text-muted-foreground font-mono">
+                    <span className="text-[11px] tracking-[0.2em] uppercase text-muted-foreground font-mono">
                       $ scan --project
                     </span>
                     <div className="w-16 border-t border-foreground/15" />
-                    <span className="h-1.5 w-1.5 bg-[#ea580c] animate-blink" />
+                    <span className="h-1.5 w-1.5 bg-[#06b6d4] animate-blink" />
                   </div>
                   <ProjectForm onSubmit={handleAnalyze} loading={false} />
                 </motion.div>
@@ -393,10 +401,10 @@ export default function DashboardPage() {
                       className="border border-foreground/15 rounded-xl h-full flex flex-col"
                     >
                       <div className="flex items-center justify-between border-b border-foreground/10 px-3 py-1.5">
-                        <span className="text-[9px] tracking-widest text-muted-foreground uppercase font-mono">
+                        <span className="text-[11px] tracking-widest text-muted-foreground uppercase font-mono">
                           pipeline
                         </span>
-                        <span className="text-[9px] tracking-widest text-[#ea580c] animate-blink font-mono">
+                        <span className="text-[11px] tracking-widest text-[#06b6d4] animate-blink font-mono">
                           ACTIVE
                         </span>
                       </div>
@@ -421,19 +429,19 @@ export default function DashboardPage() {
                                     status === "complete"
                                       ? "bg-[#22c55e] border-[#22c55e]"
                                       : status === "analyzing"
-                                        ? "border-[#ea580c] animate-pulse"
+                                        ? "border-[#06b6d4] animate-pulse"
                                         : status === "error"
                                           ? "bg-[#ef4444] border-[#ef4444]"
                                           : "border-foreground/20"
                                   }`}
                                 />
-                                <span className="text-[10px] font-mono tracking-wider uppercase w-28">
+                                <span className="text-[12px] font-mono tracking-wider uppercase w-28">
                                   {layer}
                                 </span>
                                 <div className="flex-1 h-px border-t border-dashed border-foreground/15 relative">
                                   {status === "analyzing" && (
                                     <motion.div
-                                      className="absolute top-0 left-0 h-px bg-[#ea580c]"
+                                      className="absolute top-0 left-0 h-px bg-[#06b6d4]"
                                       initial={{ width: "5%" }}
                                       animate={{ width: "90%" }}
                                       transition={{
@@ -447,11 +455,11 @@ export default function DashboardPage() {
                                   )}
                                 </div>
                                 <span
-                                  className={`text-[8px] font-mono tracking-[0.2em] w-14 text-right ${
+                                  className={`text-[10px] font-mono tracking-[0.2em] w-14 text-right ${
                                     status === "complete"
                                       ? "text-[#22c55e]"
                                       : status === "analyzing"
-                                        ? "text-[#ea580c]"
+                                        ? "text-[#06b6d4]"
                                         : status === "error"
                                           ? "text-[#ef4444]"
                                           : "text-foreground/20"
@@ -478,11 +486,11 @@ export default function DashboardPage() {
                               className="flex items-center gap-3"
                             >
                               <div className="w-2.5 h-2.5 border border-foreground/20 animate-pulse" />
-                              <span className="text-[10px] font-mono tracking-wider uppercase w-28">
+                              <span className="text-[12px] font-mono tracking-wider uppercase w-28">
                                 synthesis
                               </span>
                               <div className="flex-1 h-px border-t border-dashed border-foreground/10" />
-                              <span className="text-[8px] font-mono tracking-[0.2em] text-foreground/20 w-14 text-right">
+                              <span className="text-[10px] font-mono tracking-[0.2em] text-foreground/20 w-14 text-right">
                                 WAIT
                               </span>
                             </motion.div>
@@ -519,11 +527,20 @@ export default function DashboardPage() {
 
           {/* ── COMPARE TAB ── */}
           {activeTab === "compare" && (
-            <CompareView evaluations={evaluations} />
+            <CompareView evaluations={scans.map((s) => s.report)} />
           )}
 
+          {/* ── EXPLORE TAB ── */}
+          {activeTab === "explore" && <ExploreView />}
+
           {/* ── AGENTS TAB ── */}
-          {activeTab === "agents" && <AgentsView />}
+          {activeTab === "agents" && (
+            <AgentsView
+              scans={scans}
+              selectedIndex={selectedAgentScanIndex}
+              onSelectIndex={setSelectedAgentScanIndex}
+            />
+          )}
 
           {/* ── BLOG TAB ── */}
           {activeTab === "blog" && !viewingBlogPost && (
@@ -540,34 +557,70 @@ export default function DashboardPage() {
                   className="flex flex-col items-center pt-24"
                 >
                   <div className="border border-foreground/15 rounded-xl/15 px-8 py-10 text-center max-w-sm">
-                    <span className="text-[9px] tracking-[0.2em] uppercase text-muted-foreground font-mono block mb-3">
+                    <span className="text-[11px] tracking-[0.2em] uppercase text-muted-foreground font-mono block mb-3">
                       NO PUBLISHED REPORTS
                     </span>
-                    <p className="text-[11px] font-mono text-muted-foreground/70 leading-relaxed">
+                    <p className="text-[13px] font-mono text-muted-foreground/70 leading-relaxed">
                       Run a scan and hit PUBLISH to share reports here.
                     </p>
                   </div>
                 </motion.div>
               ) : (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
-                      PUBLISHED REPORTS
-                    </span>
-                    <span className="text-[9px] font-mono text-muted-foreground/50 tabular-nums">
-                      {blogEntries.length} {blogEntries.length === 1 ? "post" : "posts"}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {blogEntries.map((entry, i) => (
-                      <BlogCard
-                        key={`${entry.report.projectName}-${i}`}
-                        report={entry.report}
-                        publishedAt={entry.publishedAt}
-                        index={i}
-                        onClick={() => setViewingBlogPost(entry)}
-                      />
-                    ))}
+                <div className="space-y-6">
+                  {/* Featured: top scoring projects */}
+                  {(() => {
+                    const featured = [...blogEntries]
+                      .sort((a, b) => b.report.integrityScore - a.report.integrityScore)
+                      .slice(0, 3)
+                      .filter((e) => e.report.integrityScore >= 50);
+                    if (featured.length === 0) return null;
+                    return (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
+                            SPOTLIGHT
+                          </span>
+                          <span className="text-[11px] font-mono text-muted-foreground/50 tabular-nums">
+                            top {featured.length}
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                          {featured.map((entry, i) => (
+                            <BlogCard
+                              key={`featured-${entry.report.projectName}-${i}`}
+                              report={entry.report}
+                              publishedAt={entry.publishedAt}
+                              index={i}
+                              variant="featured"
+                              onClick={() => setViewingBlogPost(entry)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* All reports */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
+                        ALL REPORTS
+                      </span>
+                      <span className="text-[11px] font-mono text-muted-foreground/50 tabular-nums">
+                        {blogEntries.length} {blogEntries.length === 1 ? "post" : "posts"}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {blogEntries.map((entry, i) => (
+                        <BlogCard
+                          key={`${entry.report.projectName}-${i}`}
+                          report={entry.report}
+                          publishedAt={entry.publishedAt}
+                          index={i}
+                          onClick={() => setViewingBlogPost(entry)}
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
@@ -582,6 +635,9 @@ export default function DashboardPage() {
               onBack={() => setViewingBlogPost(null)}
             />
           )}
+
+          {/* ── WALLET TAB ── */}
+          {activeTab === "wallet" && <WalletView />}
 
           {/* ── SETTINGS TAB ── */}
           {activeTab === "settings" && <SettingsView />}
