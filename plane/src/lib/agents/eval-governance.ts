@@ -1,8 +1,9 @@
 import { llmCall, parseJSON } from "../ai";
 import type { LayerAnalysis } from "../schemas";
 import type { GovernanceData } from "../sample-data";
+import type { EvalAgentConfig } from "./registry";
 
-export async function analyzeGovernance(data: GovernanceData): Promise<LayerAnalysis> {
+async function analyzeGovernance(data: GovernanceData): Promise<LayerAnalysis> {
   const system = `You are a governance analyst evaluating DePIN/public goods projects. Your role is to objectively assess governance health and flag decentralization theater, whale capture, rubber-stamping, or sham voting. Do NOT make funding recommendations — just report what the data shows. Respond ONLY with valid JSON — no markdown, no explanation outside the JSON.`;
 
   const prompt = `Analyze this governance data and return a JSON object:
@@ -23,3 +24,13 @@ Produce 3-6 signals. Score 0-100 where 100 is perfectly healthy.`;
   const raw = await llmCall(system, prompt);
   return parseJSON<LayerAnalysis>(raw);
 }
+
+export const config: EvalAgentConfig = {
+  id: "eval-governance",
+  wave: "eval",
+  layer: "governance",
+  dataInputs: ["data-governance"],
+  async run(data) {
+    return analyzeGovernance(data["data-governance"] as GovernanceData);
+  },
+};

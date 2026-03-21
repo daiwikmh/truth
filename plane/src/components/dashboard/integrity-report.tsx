@@ -9,6 +9,7 @@ import {
   Shield,
   Download,
   RotateCcw,
+  FileText,
   Activity,
   GitBranch,
   MessageSquare,
@@ -43,9 +44,11 @@ const SEVERITY_COLORS = {
 interface IntegrityReportProps {
   report: ReportType;
   onBack: () => void;
+  onPublish?: () => void;
+  isPublished?: boolean;
 }
 
-export function IntegrityReportView({ report, onBack }: IntegrityReportProps) {
+export function IntegrityReportView({ report, onBack, onPublish, isPublished }: IntegrityReportProps) {
   const [expandedVector, setExpandedVector] = useState<number | null>(0);
 
   function exportMarkdown() {
@@ -75,13 +78,29 @@ export function IntegrityReportView({ report, onBack }: IntegrityReportProps) {
           <RotateCcw size={10} />
           NEW SCAN
         </button>
-        <button
-          onClick={exportMarkdown}
-          className="flex items-center gap-1.5 px-3 py-1.5 border border-foreground text-[9px] font-mono tracking-widest uppercase hover:bg-foreground hover:text-background transition-colors cursor-pointer"
-        >
-          <Download size={10} />
-          EXPORT
-        </button>
+        <div className="flex items-center gap-2">
+          {onPublish && (
+            <button
+              onClick={onPublish}
+              disabled={isPublished}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-[9px] font-mono tracking-widest uppercase transition-colors cursor-pointer ${
+                isPublished
+                  ? "border border-[#22c55e] text-[#22c55e]"
+                  : "border border-[#ea580c] text-[#ea580c] hover:bg-[#ea580c] hover:text-background"
+              }`}
+            >
+              <FileText size={10} />
+              {isPublished ? "PUBLISHED" : "PUBLISH"}
+            </button>
+          )}
+          <button
+            onClick={exportMarkdown}
+            className="flex items-center gap-1.5 px-3 py-1.5 border border-foreground text-[9px] font-mono tracking-widest uppercase hover:bg-foreground hover:text-background transition-colors cursor-pointer"
+          >
+            <Download size={10} />
+            EXPORT
+          </button>
+        </div>
       </motion.div>
 
       {/* Header card */}
@@ -311,10 +330,9 @@ function generateMarkdown(report: ReportType): string {
     `### Layer Scores`,
     `| Layer | Score |`,
     `|-------|-------|`,
-    `| On-Chain | ${report.layerScores.onchain}/100 |`,
-    `| Development | ${report.layerScores.development}/100 |`,
-    `| Social | ${report.layerScores.social}/100 |`,
-    `| Governance | ${report.layerScores.governance}/100 |`,
+    ...Object.entries(report.layerScores).map(
+      ([layer, score]) => `| ${layer.charAt(0).toUpperCase() + layer.slice(1)} | ${score}/100 |`
+    ),
     ``,
     `### Impact Vectors\n`,
   ];

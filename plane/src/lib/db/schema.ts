@@ -18,6 +18,7 @@ export const projects = pgTable("projects", {
   githubUrl: text("github_url"),
   tokenAddress: varchar("token_address", { length: 255 }),
   chain: varchar("chain", { length: 50 }).default("ethereum"),
+  contracts: jsonb("contracts").$type<{ label: string; address: string; chain?: string }[]>(),
   twitterHandle: varchar("twitter_handle", { length: 100 }),
   governanceSpace: varchar("governance_space", { length: 255 }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
@@ -36,12 +37,7 @@ export const evaluations = pgTable(
     verdict: varchar("verdict", { length: 20 }).notNull(),
     executiveSummary: text("executive_summary"),
     report: jsonb("report").$type<IntegrityReport>(),
-    layerScores: jsonb("layer_scores").$type<{
-      onchain: number;
-      development: number;
-      social: number;
-      governance: number;
-    }>(),
+    layerScores: jsonb("layer_scores").$type<Record<string, number>>(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   },
   (t) => [

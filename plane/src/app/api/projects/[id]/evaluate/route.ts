@@ -1,22 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getProjectById, createEvaluation } from "@/src/lib/db/queries";
 import { insertActivityEvents } from "@/src/lib/db/queries";
-import {
-  sampleOnchainData,
-  sampleGithubData,
-  sampleSocialData,
-  sampleGovernanceData,
-} from "@/src/lib/sample-data";
-import { fetchGithubData } from "@/src/lib/fetchers/github";
-import { fetchOnchainData } from "@/src/lib/fetchers/onchain";
-import { fetchSocialData } from "@/src/lib/fetchers/social";
-import { fetchGovernanceData } from "@/src/lib/fetchers/governance";
-import { analyzeOnchain } from "@/src/lib/agents/onchain-agent";
-import { analyzeDevelopment } from "@/src/lib/agents/dev-agent";
-import { analyzeSocial } from "@/src/lib/agents/social-agent";
-import { analyzeGovernance } from "@/src/lib/agents/governance-agent";
-import { synthesize } from "@/src/lib/agents/synthesis-agent";
+import { runPipeline } from "@/src/lib/agents/orchestrator";
 import { extractActivityEvents } from "@/src/lib/activity/extract";
+import type { GovernanceData } from "@/src/lib/sample-data";
 
 export async function POST(
   request: NextRequest,
@@ -33,84 +20,30 @@ export async function POST(
     const body = await request.json().catch(() => ({}));
     const isDemo = body.demo || !process.env.OPENROUTER_API_KEY;
 
-    // Step 1: Fetch data
-    let onchainData, githubData, socialData, governanceData;
-    let rawCommits: { sha: string; message: string; date: string }[] = [];
-
-    if (isDemo) {
-      onchainData = sampleOnchainData;
-      githubData = sampleGithubData;
-      socialData = sampleSocialData;
-      governanceData = sampleGovernanceData;
-    } else {
-      const results = await Promise.allSettled([
-        project.tokenAddress
-          ? fetchOnchainData(project.tokenAddress, project.chain ?? "ethereum")
-          : Promise.resolve(sampleOnchainData),
-        project.githubUrl
-          ? fetchGithubData(project.githubUrl)
-          : Promise.resolve({ data: sampleGithubData, commits: [] }),
-        project.twitterHandle
-          ? fetchSocialData(project.twitterHandle)
-          : Promise.resolve(sampleSocialData),
-        project.governanceSpace
-          ? fetchGovernanceData(project.governanceSpace)
-          : Promise.resolve(sampleGovernanceData),
-      ]);
-
-      onchainData =
-        results[0].status === "fulfilled"
-          ? results[0].value
-          : sampleOnchainData;
-
-      if (results[1].status === "fulfilled") {
-        const ghResult = results[1].value;
-        if ("data" in ghResult && "commits" in ghResult) {
-          githubData = ghResult.data;
-          rawCommits = ghResult.commits;
-        } else {
-          githubData = ghResult as typeof sampleGithubData;
-        }
-      } else {
-        githubData = sampleGithubData;
-      }
-
-      socialData =
-        results[2].status === "fulfilled"
-          ? results[2].value
-          : sampleSocialData;
-      governanceData =
-        results[3].status === "fulfilled"
-          ? results[3].value
-          : sampleGovernanceData;
-    }
-
-    // If no API key, use demo report path
     if (!process.env.OPENROUTER_API_KEY) {
       return NextResponse.json({ error: "OPENROUTER_API_KEY not configured" }, { status: 503 });
     }
 
-    // Step 2: Run 4 analysis agents in parallel
-    const [onchainAnalysis, devAnalysis, socialAnalysis, govAnalysis] =
-      await Promise.all([
-        analyzeOnchain(onchainData),
-        analyzeDevelopment(githubData),
-        analyzeSocial(socialData),
-        analyzeGovernance(governanceData),
-      ]);
+    const { report, dataOutputs } = await runPipeline(
+      {
+        name: project.name,
+        tokenAddress: project.tokenAddress,
+        chain: project.chain,
+        githubUrl: project.githubUrl,
+        twitterHandle: project.twitterHandle,
+        governanceSpace: project.governanceSpace,
+      },
+      isDemo
+    );
 
-    // Step 3: Synthesis
-    const report = await synthesize(project.name, [
-      onchainAnalysis,
-      devAnalysis,
-      socialAnalysis,
-      govAnalysis,
-    ]);
-
-    // Step 4: Persist evaluation
+    // Persist evaluation
     const evaluation = await createEvaluation(id, report);
 
-    // Step 5: Extract and persist activity events
+    // Extract activity events from raw data
+    const ghData = dataOutputs["data-github"] as { commits?: { sha: string; message: string; date: string }[] } | undefined;
+    const rawCommits = ghData?.commits ?? [];
+    const governanceData = (dataOutputs["data-governance"] as GovernanceData) ?? undefined;
+
     const events = extractActivityEvents({
       projectId: id,
       evaluationId: evaluation.id,

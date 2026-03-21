@@ -10,8 +10,11 @@ import {
   ArrowRight,
   Zap,
   Loader2,
+  Plus,
+  X,
 } from "lucide-react";
 import { sampleProject } from "@/src/lib/sample-data";
+import type { ContractEntry } from "@/src/lib/sample-data";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -21,6 +24,7 @@ interface ProjectFormProps {
     githubUrl: string;
     tokenAddress: string;
     chain: string;
+    contracts: ContractEntry[];
     twitterHandle: string;
     governanceSpace: string;
     demo: boolean;
@@ -49,12 +53,6 @@ const FIELDS: {
     icon: Github,
   },
   {
-    key: "tokenAddress",
-    label: "TOKEN CONTRACT",
-    placeholder: "0x1234...abcd",
-    icon: Coins,
-  },
-  {
     key: "twitterHandle",
     label: "TWITTER/X HANDLE",
     placeholder: "@projecthandle",
@@ -72,26 +70,52 @@ export function ProjectForm({ onSubmit, loading }: ProjectFormProps) {
   const [form, setForm] = useState({
     projectName: "",
     githubUrl: "",
-    tokenAddress: "",
     chain: "ethereum",
     twitterHandle: "",
     governanceSpace: "",
   });
+  const [contracts, setContracts] = useState<ContractEntry[]>([
+    { label: "", address: "", chain: "ethereum" },
+  ]);
 
   function fillDemo() {
     setForm({
       projectName: sampleProject.projectName,
       githubUrl: sampleProject.githubUrl || "",
-      tokenAddress: sampleProject.tokenAddress || "",
       chain: sampleProject.chain || "ethereum",
       twitterHandle: sampleProject.twitterHandle || "",
       governanceSpace: sampleProject.governanceSpace || "",
     });
+    setContracts(
+      sampleProject.contracts ?? [
+        { label: "Token", address: sampleProject.tokenAddress || "", chain: "ethereum" },
+      ]
+    );
+  }
+
+  function addContract() {
+    setContracts((prev) => [...prev, { label: "", address: "", chain: "ethereum" }]);
+  }
+
+  function removeContract(i: number) {
+    setContracts((prev) => prev.filter((_, idx) => idx !== i));
+  }
+
+  function updateContract(i: number, field: keyof ContractEntry, value: string) {
+    setContracts((prev) =>
+      prev.map((c, idx) => (idx === i ? { ...c, [field]: value } : c))
+    );
   }
 
   function handleSubmit(demo: boolean) {
     if (!form.projectName) return;
-    onSubmit({ ...form, demo });
+    const validContracts = contracts.filter((c) => c.address.trim());
+    onSubmit({
+      ...form,
+      tokenAddress: validContracts[0]?.address || "",
+      contracts: validContracts,
+      demo,
+    });
   }
 
   return (
@@ -114,7 +138,7 @@ export function ProjectForm({ onSubmit, loading }: ProjectFormProps) {
         </button>
       </div>
 
-      {/* Form fields */}
+      {/* Standard fields */}
       <div className="flex flex-col">
         {FIELDS.map((field, i) => {
           const Icon = field.icon;
@@ -124,7 +148,7 @@ export function ProjectForm({ onSubmit, loading }: ProjectFormProps) {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 + i * 0.06, duration: 0.4, ease }}
-              className="flex items-center border-b border-foreground/20 last:border-b-0"
+              className="flex items-center border-b border-foreground/20"
             >
               <div className="flex items-center justify-center w-10 h-10 border-r border-foreground/20 shrink-0">
                 <Icon size={14} className="text-muted-foreground" />
@@ -149,6 +173,81 @@ export function ProjectForm({ onSubmit, loading }: ProjectFormProps) {
             </motion.div>
           );
         })}
+      </div>
+
+      {/* Contracts section */}
+      <div className="border-b border-foreground/20">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-foreground/10">
+          <span className="text-[8px] tracking-[0.2em] uppercase text-muted-foreground font-mono">
+            CONTRACTS
+          </span>
+          <button
+            onClick={addContract}
+            className="flex items-center gap-1 text-[8px] font-mono tracking-wider uppercase text-[#ea580c] hover:underline cursor-pointer"
+          >
+            <Plus size={10} />
+            ADD
+          </button>
+        </div>
+        {contracts.map((c, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -15 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.05 * i, duration: 0.3, ease }}
+            className="flex items-center border-b border-foreground/10 last:border-b-0"
+          >
+            <div className="flex items-center justify-center w-10 h-10 border-r border-foreground/20 shrink-0">
+              <Coins size={14} className="text-muted-foreground" />
+            </div>
+            <div className="flex-1 flex gap-2 px-3 py-2">
+              <div className="w-24 shrink-0">
+                <label className="text-[7px] tracking-[0.15em] uppercase text-muted-foreground/50 font-mono block mb-0.5">
+                  LABEL
+                </label>
+                <input
+                  type="text"
+                  value={c.label}
+                  onChange={(e) => updateContract(i, "label", e.target.value)}
+                  placeholder="Token"
+                  className="bg-transparent text-xs font-mono text-foreground placeholder:text-muted-foreground/30 outline-none w-full"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-[7px] tracking-[0.15em] uppercase text-muted-foreground/50 font-mono block mb-0.5">
+                  ADDRESS
+                </label>
+                <input
+                  type="text"
+                  value={c.address}
+                  onChange={(e) => updateContract(i, "address", e.target.value)}
+                  placeholder="0x..."
+                  className="bg-transparent text-xs font-mono text-foreground placeholder:text-muted-foreground/30 outline-none w-full"
+                />
+              </div>
+              <div className="w-20 shrink-0">
+                <label className="text-[7px] tracking-[0.15em] uppercase text-muted-foreground/50 font-mono block mb-0.5">
+                  CHAIN
+                </label>
+                <input
+                  type="text"
+                  value={c.chain ?? "ethereum"}
+                  onChange={(e) => updateContract(i, "chain", e.target.value)}
+                  placeholder="ethereum"
+                  className="bg-transparent text-xs font-mono text-foreground placeholder:text-muted-foreground/30 outline-none w-full"
+                />
+              </div>
+            </div>
+            {contracts.length > 1 && (
+              <button
+                onClick={() => removeContract(i)}
+                className="px-2 text-muted-foreground/40 hover:text-[#ef4444] cursor-pointer"
+              >
+                <X size={12} />
+              </button>
+            )}
+          </motion.div>
+        ))}
       </div>
 
       {/* Submit buttons */}

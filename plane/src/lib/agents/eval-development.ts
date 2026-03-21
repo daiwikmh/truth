@@ -1,8 +1,9 @@
 import { llmCall, parseJSON } from "../ai";
 import type { LayerAnalysis } from "../schemas";
 import type { GithubData } from "../sample-data";
+import type { EvalAgentConfig } from "./registry";
 
-export async function analyzeDevelopment(data: GithubData): Promise<LayerAnalysis> {
+async function analyzeDevelopment(data: GithubData): Promise<LayerAnalysis> {
   const system = `You are a software development analyst evaluating DePIN/public goods projects. Your role is to objectively assess development health and flag red flags like zombie repos, fake activity, copy-paste codebases, or single-contributor dependency. Do NOT make funding recommendations — just report what the data shows. Respond ONLY with valid JSON — no markdown, no explanation outside the JSON.`;
 
   const prompt = `Analyze these GitHub metrics and return a JSON object:
@@ -23,3 +24,15 @@ Produce 3-6 signals. Score 0-100 where 100 is perfectly healthy.`;
   const raw = await llmCall(system, prompt);
   return parseJSON<LayerAnalysis>(raw);
 }
+
+export const config: EvalAgentConfig = {
+  id: "eval-development",
+  wave: "eval",
+  layer: "development",
+  dataInputs: ["data-github"],
+  async run(data) {
+    const ghResult = data["data-github"] as { data: GithubData } | GithubData;
+    const ghData = "data" in ghResult ? ghResult.data : ghResult;
+    return analyzeDevelopment(ghData);
+  },
+};

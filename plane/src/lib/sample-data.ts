@@ -1,10 +1,29 @@
+export interface ContractEntry {
+  label: string;
+  address: string;
+  chain?: string;
+}
+
 export interface ProjectInput {
   projectName: string;
   githubUrl?: string;
   tokenAddress?: string;
   chain?: string;
+  contracts?: ContractEntry[];
   twitterHandle?: string;
   governanceSpace?: string;
+}
+
+export interface OnchainContractData {
+  label: string;
+  address: string;
+  tokenHolders: { address: string; percentage: number }[];
+  top10HoldersPercent: number;
+  uptimePercent: number;
+  dailyTransactions: number;
+  tokenVelocity: number;
+  contractAge: number;
+  totalSupply: string;
 }
 
 export interface OnchainData {
@@ -15,6 +34,7 @@ export interface OnchainData {
   tokenVelocity: number;
   contractAge: number;
   totalSupply: string;
+  contracts?: OnchainContractData[];
 }
 
 export interface GithubData {
@@ -52,6 +72,9 @@ export const sampleProject: ProjectInput = {
   githubUrl: "https://github.com/nexusnet/nexusnet-core",
   tokenAddress: "0x1234...abcd",
   chain: "ethereum",
+  contracts: [
+    { label: "Token", address: "0x1234...abcd", chain: "ethereum" },
+  ],
   twitterHandle: "@NexusNetDePIN",
   governanceSpace: "nexusnet.eth",
 };

@@ -8,6 +8,7 @@ import {
   Bot,
   ScanSearch,
   Monitor,
+  FileText,
   Activity,
   GitBranch,
   MessageSquare,
@@ -29,10 +30,10 @@ interface SidebarProps {
 
 const NAV_TABS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { key: "projects", label: "Projects", icon: FolderOpen },
-  { key: "agents", label: "Agents", icon: Bot },
   { key: "analysis", label: "Analysis", icon: ScanSearch },
-  { key: "display", label: "Display", icon: Monitor },
+  { key: "blog", label: "Blog", icon: FileText },
+  { key: "compare", label: "Compare", icon: FolderOpen },
+  { key: "agents", label: "Agents", icon: Bot },
 ];
 
 const LAYER_STATUS = [

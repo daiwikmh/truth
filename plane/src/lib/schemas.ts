@@ -37,7 +37,7 @@ export const ImpactVector = z.object({
 });
 
 export const LayerAnalysis = z.object({
-  layer: z.enum(["onchain", "development", "social", "governance"]),
+  layer: z.string().describe("Layer identifier"),
   score: z.number().min(0).max(100).describe("Layer health score 0-100"),
   summary: z.string().describe("One-paragraph summary of findings"),
   signals: z.array(MicroSignal),
@@ -57,12 +57,7 @@ export const IntegrityReport = z.object({
     .string()
     .describe("2-3 sentence executive summary for decision makers"),
   impactVectors: z.array(ImpactVector),
-  layerScores: z.object({
-    onchain: z.number().min(0).max(100),
-    development: z.number().min(0).max(100),
-    social: z.number().min(0).max(100),
-    governance: z.number().min(0).max(100),
-  }),
+  layerScores: z.record(z.string(), z.number().min(0).max(100)),
   recommendations: z
     .array(z.string())
     .describe("Actionable recommendations for funders/evaluators"),
@@ -73,6 +68,11 @@ export const ProjectInputSchema = z.object({
   githubUrl: z.string().url().optional(),
   tokenAddress: z.string().optional(),
   chain: z.string().default("ethereum"),
+  contracts: z.array(z.object({
+    label: z.string(),
+    address: z.string(),
+    chain: z.string().optional(),
+  })).optional(),
   twitterHandle: z.string().optional(),
   governanceSpace: z.string().optional(),
 });
