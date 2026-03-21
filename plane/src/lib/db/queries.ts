@@ -5,6 +5,7 @@ import {
   evaluations,
   activityEvents,
   pairwiseComparisons,
+  blogPosts,
 } from "./schema";
 import type { IntegrityReport } from "../schemas";
 
@@ -174,6 +175,27 @@ export async function createComparison(input: {
     .values(input)
     .returning();
   return comparison;
+}
+
+// ── Blog Posts ───────────────────────────────────────────
+
+export async function listBlogPosts(limit = 50) {
+  return db
+    .select()
+    .from(blogPosts)
+    .orderBy(desc(blogPosts.publishedAt))
+    .limit(limit);
+}
+
+export async function createBlogPost(input: {
+  projectName: string;
+  integrityScore: number;
+  verdict: string;
+  summary: string;
+  report: IntegrityReport;
+}) {
+  const [post] = await db.insert(blogPosts).values(input).returning();
+  return post;
 }
 
 export async function getComparisonsByProject(projectId: string) {

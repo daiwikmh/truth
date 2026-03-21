@@ -94,3 +94,18 @@ export const pairwiseComparisons = pgTable(
     index("comp_b_idx").on(t.projectBId),
   ]
 );
+
+// ── Blog Posts ───────────────────────────────────────────
+export const blogPosts = pgTable(
+  "blog_posts",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    projectName: varchar("project_name", { length: 255 }).notNull(),
+    integrityScore: integer("integrity_score").notNull(),
+    verdict: varchar("verdict", { length: 20 }).notNull(),
+    summary: text("summary"),
+    report: jsonb("report").$type<IntegrityReport>().notNull(),
+    publishedAt: timestamp("published_at", { withTimezone: true }).defaultNow(),
+  },
+  (t) => [index("blog_project_idx").on(t.projectName)]
+);

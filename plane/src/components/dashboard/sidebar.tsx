@@ -7,12 +7,7 @@ import {
   FolderOpen,
   Bot,
   ScanSearch,
-  Monitor,
   FileText,
-  Activity,
-  GitBranch,
-  MessageSquare,
-  Landmark,
   Terminal,
   Settings,
 } from "lucide-react";
@@ -36,20 +31,6 @@ const NAV_TABS = [
   { key: "agents", label: "Agents", icon: Bot },
 ];
 
-const LAYER_STATUS = [
-  { key: "onchain", icon: Activity },
-  { key: "development", icon: GitBranch },
-  { key: "social", icon: MessageSquare },
-  { key: "governance", icon: Landmark },
-] as const;
-
-function statusColor(status: AnalysisStatus) {
-  if (status === "complete") return "bg-[#22c55e]";
-  if (status === "analyzing") return "bg-[#ea580c] animate-blink";
-  if (status === "error") return "bg-[#ef4444]";
-  return "bg-foreground/10";
-}
-
 export function Sidebar({
   layerStatuses,
   analysisPhase,
@@ -57,11 +38,11 @@ export function Sidebar({
   onTabChange,
 }: SidebarProps) {
   return (
-    <aside className="fixed top-0 left-0 h-screen w-[200px] border-r-2 border-foreground bg-background flex flex-col z-40">
+    <aside className="fixed top-0 left-0 h-screen w-[200px] border-r border-foreground/10 bg-background flex flex-col z-40">
       {/* Logo */}
-      <div className="px-4 py-3 border-b-2 border-foreground">
+      <div className="px-4 py-3 border-b border-foreground/10">
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-7 h-7 border-2 border-[#ea580c] flex items-center justify-center">
+          <div className="w-7 h-7 border border-[#ea580c]/40 rounded-lg flex items-center justify-center">
             <Shield size={12} className="text-[#ea580c]" />
           </div>
           <div>
@@ -80,7 +61,7 @@ export function Sidebar({
         <span className="text-[7px] tracking-[0.18em] uppercase text-muted-foreground/50 font-mono px-2 mb-1 block">
           NAVIGATION
         </span>
-        <div className="flex flex-col gap-px mt-1">
+        <div className="flex flex-col gap-0.5 mt-1">
           {NAV_TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.key;
@@ -88,7 +69,7 @@ export function Sidebar({
               <button
                 key={tab.key}
                 onClick={() => onTabChange?.(tab.key)}
-                className={`flex items-center gap-3 px-3 py-2.5 text-left transition-all cursor-pointer ${
+                className={`flex items-center gap-3 px-3 py-2.5 text-left transition-all cursor-pointer rounded-lg ${
                   isActive
                     ? "bg-foreground text-background"
                     : "text-foreground/60 hover:text-foreground hover:bg-foreground/5"
@@ -104,35 +85,12 @@ export function Sidebar({
         </div>
       </div>
 
-      {/* Layer Status — compact inline */}
-      <div className="px-2 pt-3 pb-1">
-        <span className="text-[7px] tracking-[0.18em] uppercase text-muted-foreground/50 font-mono px-2 mb-1 block">
-          LAYER STATUS
-        </span>
-        <div className="flex items-center gap-1 px-2.5 mt-1">
-          {LAYER_STATUS.map((layer) => {
-            const status = layerStatuses[layer.key] || "idle";
-            const Icon = layer.icon;
-            return (
-              <div
-                key={layer.key}
-                className="flex items-center gap-1 px-1.5 py-1"
-                title={`${layer.key}: ${status}`}
-              >
-                <div className={`w-1.5 h-1.5 ${statusColor(status)}`} />
-                <Icon size={10} className="text-muted-foreground/60" />
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Pipeline indicator */}
       <div className="px-4 py-2 mt-1">
         <div className="flex items-center gap-2 px-0">
           <Terminal size={9} className="text-muted-foreground/40" />
           <div
-            className={`w-2 h-2 ${
+            className={`w-2 h-2 rounded-full ${
               analysisPhase === "analyzing"
                 ? "bg-[#ea580c] animate-blink"
                 : analysisPhase === "report"
@@ -157,7 +115,7 @@ export function Sidebar({
       <div className="px-2 pb-1">
         <button
           onClick={() => onTabChange?.("settings")}
-          className={`flex items-center gap-3 px-3 py-2.5 w-full text-left transition-all cursor-pointer ${
+          className={`flex items-center gap-3 px-3 py-2.5 w-full text-left transition-all cursor-pointer rounded-lg ${
             activeTab === "settings"
               ? "bg-foreground text-background"
               : "text-foreground/60 hover:text-foreground hover:bg-foreground/5"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sidebar } from "@/src/components/dashboard/sidebar";
 import { Topbar } from "@/src/components/dashboard/topbar";
@@ -12,6 +12,9 @@ import { IntegrityReportView } from "@/src/components/dashboard/integrity-report
 import { DashboardView } from "@/src/components/dashboard/dashboard-view";
 import { BlogCard } from "@/src/components/dashboard/blog-card";
 import { BlogPost } from "@/src/components/dashboard/blog-post";
+import { CompareView } from "@/src/components/dashboard/compare-view";
+import { AgentsView } from "@/src/components/dashboard/agents-view";
+import { SettingsView } from "@/src/components/dashboard/settings-view";
 import { EASE } from "@/src/config/constants";
 import type { IntegrityReport } from "@/src/lib/schemas";
 
@@ -51,7 +54,9 @@ export default function DashboardPage() {
   });
   const [signalsDetected, setSignalsDetected] = useState(0);
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [evaluations, setEvaluations] = useState<IntegrityReport[]>([]);
+  const [evaluations, setEvaluations] = useState<
+    (IntegrityReport & { projectId?: string })[]
+  >([]);
   const [blogEntries, setBlogEntries] = useState<BlogEntry[]>([]);
   const [viewingBlogPost, setViewingBlogPost] = useState<BlogEntry | null>(null);
 
@@ -205,12 +210,33 @@ export default function DashboardPage() {
     if (tab !== "blog") setViewingBlogPost(null);
   }
 
-  function handlePublish() {
+  useEffect(() => {
+    fetch("/api/blog")
+      .then((r) => r.json())
+      .then((posts: { report: IntegrityReport; publishedAt: string }[]) => {
+        setBlogEntries(
+          posts.map((p) => ({
+            report: p.report,
+            publishedAt: p.publishedAt?.split("T")[0] ?? "",
+          }))
+        );
+      })
+      .catch(() => {});
+  }, []);
+
+  async function handlePublish() {
     if (!report) return;
     const exists = blogEntries.some(
       (e) => e.report.projectName === report.projectName
     );
     if (exists) return;
+    try {
+      await fetch("/api/blog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ report }),
+      });
+    } catch {}
     setBlogEntries((prev) => [
       {
         report,
@@ -493,46 +519,11 @@ export default function DashboardPage() {
 
           {/* ── COMPARE TAB ── */}
           {activeTab === "compare" && (
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: EASE }}
-              className="flex flex-col items-center pt-24"
-            >
-              <div className="border-2 border-foreground/15 px-8 py-10 text-center max-w-sm">
-                <span className="text-[9px] tracking-[0.2em] uppercase text-muted-foreground font-mono block mb-3">
-                  PAIRWISE COMPARISON
-                </span>
-                <p className="text-[11px] font-mono text-muted-foreground/70 leading-relaxed">
-                  Compare two evaluated projects head-to-head across all integrity dimensions.
-                </p>
-                {evaluations.length < 2 && (
-                  <p className="text-[10px] font-mono text-muted-foreground/40 mt-4">
-                    Evaluate at least 2 projects to unlock comparison.
-                  </p>
-                )}
-              </div>
-            </motion.div>
+            <CompareView evaluations={evaluations} />
           )}
 
           {/* ── AGENTS TAB ── */}
-          {activeTab === "agents" && (
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: EASE }}
-              className="flex flex-col items-center pt-24"
-            >
-              <div className="border-2 border-foreground/15 px-8 py-10 text-center max-w-sm">
-                <span className="text-[9px] tracking-[0.2em] uppercase text-muted-foreground font-mono block mb-3">
-                  AGENT REGISTRY
-                </span>
-                <p className="text-[11px] font-mono text-muted-foreground/70 leading-relaxed">
-                  9 agents across 3 waves. Visual pipeline status and per-agent health monitoring.
-                </p>
-              </div>
-            </motion.div>
-          )}
+          {activeTab === "agents" && <AgentsView />}
 
           {/* ── BLOG TAB ── */}
           {activeTab === "blog" && !viewingBlogPost && (
@@ -593,23 +584,7 @@ export default function DashboardPage() {
           )}
 
           {/* ── SETTINGS TAB ── */}
-          {activeTab === "settings" && (
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: EASE }}
-              className="flex flex-col items-center pt-24"
-            >
-              <div className="border-2 border-foreground/15 px-8 py-10 text-center max-w-sm">
-                <span className="text-[9px] tracking-[0.2em] uppercase text-muted-foreground font-mono block mb-3">
-                  SETTINGS
-                </span>
-                <p className="text-[11px] font-mono text-muted-foreground/70 leading-relaxed">
-                  API configuration, theme, and agent parameters.
-                </p>
-              </div>
-            </motion.div>
-          )}
+          {activeTab === "settings" && <SettingsView />}
         </div>
       </main>
     </div>

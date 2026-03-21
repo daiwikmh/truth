@@ -3,29 +3,51 @@ import { NextRequest, NextResponse } from "next/server";
 export const maxDuration = 300;
 import type { ProjectInput } from "@/src/lib/sample-data";
 import { runPipeline } from "@/src/lib/agents/orchestrator";
+import { createProject, createEvaluation } from "@/src/lib/db/queries";
 
 export async function POST(request: NextRequest) {
   try {
     const body: ProjectInput & { demo?: boolean } = await request.json();
 
-    if (!process.env.OPENROUTER_API_KEY) {
-      return NextResponse.json(getDemoReport(body.projectName));
+    const isDemoMode = !process.env.OPENROUTER_API_KEY;
+    let report;
+
+    if (isDemoMode) {
+      report = getDemoReport(body.projectName);
+    } else {
+      const result = await runPipeline(
+        {
+          name: body.projectName,
+          tokenAddress: body.tokenAddress,
+          chain: body.chain,
+          contracts: body.contracts,
+          githubUrl: body.githubUrl,
+          twitterHandle: body.twitterHandle,
+          governanceSpace: body.governanceSpace,
+        },
+        !!body.demo
+      );
+      report = result.report;
     }
 
-    const { report } = await runPipeline(
-      {
+    // persist to DB for comparison support
+    let projectId: string | undefined;
+    try {
+      const project = await createProject({
         name: body.projectName,
+        githubUrl: body.githubUrl,
         tokenAddress: body.tokenAddress,
         chain: body.chain,
-        contracts: body.contracts,
-        githubUrl: body.githubUrl,
         twitterHandle: body.twitterHandle,
         governanceSpace: body.governanceSpace,
-      },
-      !!body.demo
-    );
+      });
+      await createEvaluation(project.id, report);
+      projectId = project.id;
+    } catch (e) {
+      console.error("DB persist skipped:", e);
+    }
 
-    return NextResponse.json(report);
+    return NextResponse.json({ ...report, projectId });
   } catch (error) {
     console.error("Analysis error:", error);
     return NextResponse.json(

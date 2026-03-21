@@ -85,8 +85,8 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
               disabled={isPublished}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-[9px] font-mono tracking-widest uppercase transition-colors cursor-pointer ${
                 isPublished
-                  ? "border border-[#22c55e] text-[#22c55e]"
-                  : "border border-[#ea580c] text-[#ea580c] hover:bg-[#ea580c] hover:text-background"
+                  ? "border border-[#22c55e] rounded-lg text-[#22c55e]"
+                  : "border border-[#ea580c] rounded-lg text-[#ea580c] hover:bg-[#ea580c] hover:text-background"
               }`}
             >
               <FileText size={10} />
@@ -95,7 +95,7 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
           )}
           <button
             onClick={exportMarkdown}
-            className="flex items-center gap-1.5 px-3 py-1.5 border border-foreground text-[9px] font-mono tracking-widest uppercase hover:bg-foreground hover:text-background transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 border border-foreground/20 rounded-lg text-[9px] font-mono tracking-widest uppercase hover:bg-foreground hover:text-background transition-colors cursor-pointer"
           >
             <Download size={10} />
             EXPORT
@@ -108,10 +108,10 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease }}
-        className="border-2 border-foreground"
+        className="border border-foreground/15 rounded-xl overflow-hidden"
       >
         {/* Title */}
-        <div className="flex items-center justify-between border-b-2 border-foreground px-3 py-1.5">
+        <div className="flex items-center justify-between border-b border-foreground/10 px-3 py-1.5">
           <div className="flex items-center gap-1.5">
             <Shield size={10} className="text-[#ea580c]" />
             <span className="text-[9px] tracking-widest text-muted-foreground uppercase font-mono">
@@ -126,7 +126,7 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
         {/* Score + Summary */}
         <div className="flex flex-col md:flex-row">
           {/* Gauge */}
-          <div className="flex flex-col items-center justify-center p-6 md:border-r-2 border-b-2 md:border-b-0 border-foreground min-w-[220px]">
+          <div className="flex flex-col items-center justify-center p-6 md:border-r border-b md:border-b-0 border-foreground/10 min-w-[220px]">
             <ScoreGauge score={report.integrityScore} size={160} />
             <span className="mt-2 text-sm font-mono font-bold tracking-tight">
               {report.projectName}
@@ -183,9 +183,9 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.15, ease }}
-        className="border-x-2 border-b-2 border-foreground"
+        className="border border-foreground/15 rounded-xl overflow-hidden mt-3"
       >
-        <div className="flex items-center gap-2 px-3 py-1.5 border-b-2 border-foreground">
+        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-foreground/10">
           <AlertTriangle size={10} className="text-[#ea580c]" />
           <span className="text-[9px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
             VECTORS
@@ -214,7 +214,7 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
                 <span className="flex-1 text-left text-[11px] font-mono font-bold">
                   {vector.theme}
                 </span>
-                <span className="px-1.5 py-0.5 text-[8px] font-mono font-bold bg-foreground text-background">
+                <span className="px-1.5 py-0.5 text-[8px] font-mono font-bold bg-foreground text-background rounded-md">
                   {gap}%
                 </span>
               </button>
@@ -243,7 +243,7 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
                             OBSERVED {(vector.observedReality * 100).toFixed(0)}
                           </span>
                         </div>
-                        <div className="relative h-1.5 border border-foreground/20">
+                        <div className="relative h-1.5 border border-foreground/20 rounded-full overflow-hidden">
                           <div
                             className="absolute top-0 left-0 h-full bg-foreground/10"
                             style={{ width: `${vector.claimedPerformance * 100}%` }}
@@ -290,9 +290,9 @@ export function IntegrityReportView({ report, onBack, onPublish, isPublished }: 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3, ease }}
-        className="border-x-2 border-b-2 border-foreground"
+        className="border border-foreground/15 rounded-xl overflow-hidden mt-3"
       >
-        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-foreground/15">
+        <div className="flex items-center gap-2 px-3 py-1.5 border-b border-foreground/10">
           <span className="text-[9px] tracking-[0.15em] uppercase text-muted-foreground font-mono">
             // recommendations
           </span>

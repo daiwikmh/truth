@@ -123,10 +123,10 @@ export function ProjectForm({ onSubmit, loading }: ProjectFormProps) {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, ease }}
-      className="w-full max-w-xl border-2 border-foreground"
+      className="w-full max-w-xl border border-foreground/15 rounded-xl overflow-hidden"
     >
       {/* Header bar */}
-      <div className="flex items-center justify-between border-b-2 border-foreground px-4 py-2">
+      <div className="flex items-center justify-between border-b border-foreground/10 px-4 py-2">
         <span className="text-[10px] tracking-widest text-muted-foreground uppercase font-mono">
           project_input.cfg
         </span>
@@ -251,7 +251,7 @@ export function ProjectForm({ onSubmit, loading }: ProjectFormProps) {
       </div>
 
       {/* Submit buttons */}
-      <div className="flex border-t-2 border-foreground">
+      <div className="flex border-t border-foreground/10">
         <motion.button
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}

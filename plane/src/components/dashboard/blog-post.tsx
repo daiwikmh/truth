@@ -64,7 +64,7 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: EASE }}
-        className="border-2 border-foreground mb-0"
+        className="border border-foreground/15 rounded-xl overflow-hidden mb-0"
       >
         <div className="flex items-center justify-between border-b border-foreground/15 px-4 py-2">
           <span className="text-[8px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
@@ -77,7 +77,7 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
 
         <div className="flex flex-col md:flex-row">
           {/* Score gauge */}
-          <div className="flex flex-col items-center justify-center p-6 md:border-r-2 border-b-2 md:border-b-0 border-foreground min-w-[200px]">
+          <div className="flex flex-col items-center justify-center p-6 md:border-r border-b md:border-b-0 border-foreground/10 min-w-[200px]">
             <ScoreGauge score={report.integrityScore} size={150} />
             <span className="mt-3 text-sm font-mono font-bold tracking-tight">
               {report.projectName}
@@ -123,7 +123,7 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1, ease: EASE }}
-        className="border-x-2 border-b-2 border-foreground"
+        className="border border-foreground/15 rounded-xl overflow-hidden mt-3"
       >
         <div className="px-4 py-2 border-b border-foreground/15">
           <span className="text-[8px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
@@ -149,7 +149,7 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
                 <span className="text-[12px] font-mono font-bold">
                   {vector.theme}
                 </span>
-                <span className="px-2 py-0.5 text-[8px] font-mono font-bold bg-foreground text-background">
+                <span className="px-2 py-0.5 text-[8px] font-mono font-bold bg-foreground text-background rounded-md">
                   GAP {gap}%
                 </span>
               </div>
@@ -168,7 +168,7 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
                     OBSERVED {(vector.observedReality * 100).toFixed(0)}%
                   </span>
                 </div>
-                <div className="relative h-2 border border-foreground/20">
+                <div className="relative h-2 border border-foreground/20 rounded-full overflow-hidden">
                   <div
                     className="absolute top-0 left-0 h-full bg-foreground/10"
                     style={{ width: `${vector.claimedPerformance * 100}%` }}
@@ -211,7 +211,7 @@ export function BlogPost({ report, publishedAt, onBack }: BlogPostProps) {
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2, ease: EASE }}
-        className="border-x-2 border-b-2 border-foreground mb-8"
+        className="border border-foreground/15 rounded-xl overflow-hidden mt-3 mb-8"
       >
         <div className="px-4 py-2 border-b border-foreground/15">
           <span className="text-[8px] font-mono tracking-[0.2em] uppercase text-muted-foreground">

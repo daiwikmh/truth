@@ -29,7 +29,7 @@ export function ProjectCard({ report, index, onClick }: ProjectCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06, duration: 0.35, ease: EASE }}
       onClick={onClick}
-      className="border-2 border-foreground text-left w-full cursor-pointer hover:bg-foreground/[0.03] transition-colors"
+      className="border border-foreground/15 rounded-xl text-left w-full cursor-pointer hover:bg-foreground/[0.03] transition-colors"
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-foreground/15 px-4 py-2.5">

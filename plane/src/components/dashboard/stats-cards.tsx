@@ -48,7 +48,7 @@ export function StatsCards({
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-0 border-2 border-foreground">
+    <div className="grid grid-cols-4 gap-0 border border-foreground/15 rounded-xl overflow-hidden">
       {cards.map((card, i) => (
         <motion.div
           key={card.label}
