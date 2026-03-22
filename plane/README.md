@@ -317,3 +317,78 @@ curl -X POST http://localhost:3000/api/validate-idea \
   -H "Content-Type: application/json" \
   -d '{"ideaDescription": "A decentralized compute marketplace for GPU owners"}'
 ```
+
+---
+
+## Verifiable Execution: EigenCompute TEE Integration
+
+The integrity scoring pipeline runs inside an **EigenLayer Trusted Execution Environment (TEE)** via EigenCompute. This means every analysis is produced in a verifiable, attested compute environment with cryptographic integrity guarantees.
+
+### Architecture
+
+```
+User browser
+     |
+     v
+Next.js (Vercel)  --EIGENCOMPUTE_RUNNER_URL-->  EigenCompute TEE
+src/app/api/analyze/route.ts                    src/server.ts (Hono)
+                                                     |
+                                                runPipeline()
+                                                4-layer agent system
+```
+
+The Next.js frontend proxies analysis requests to the TEE runner. If `EIGENCOMPUTE_RUNNER_URL` is not set, the pipeline runs locally inside the Next.js function (fallback mode).
+
+### Why TEE?
+
+**The core value proposition:** the system that evaluates project integrity itself has verifiable integrity. A user can:
+1. Submit a project for analysis
+2. Receive an integrity report
+3. Verify via EigenCompute attestation that the exact code in the TEE produced that report
+4. Know with cryptographic certainty that the evaluation was unmanipulated
+
+This is especially valuable for Octant funding decisions — the evaluation system itself cannot be compromised or secretly modified.
+
+### Deployment
+
+**Prerequisites:**
+- EigenCompute CLI: `npm install -g @eigencompute/cli`
+- Authenticated: `ecloud auth login`
+- Billing set up: `ecloud billing subscribe`
+
+**Deploy from `plane/` directory:**
+
+1. Build Docker image:
+```bash
+docker build --platform linux/amd64 -t dope-runner .
+```
+
+2. Deploy to EigenCompute:
+```bash
+ecloud compute app deploy --name dope-runner --env-file .env
+```
+
+3. Get the runner URL from the output
+
+4. Set in Vercel environment:
+```
+EIGENCOMPUTE_RUNNER_URL=https://dope-runner.eigencompute.app
+```
+
+5. Redeploy frontend on Vercel — all analysis requests now proxy through the TEE.
+
+### Verification
+
+Verify the runner is live:
+```bash
+curl https://dope-runner.eigencompute.app/health
+```
+
+Check TEE attestation:
+```bash
+ecloud compute app attest dope-runner
+```
+
+### Fallback Mode
+
+If `EIGENCOMPUTE_RUNNER_URL` is not set, the pipeline runs locally. Once a URL is set and redeployed, all requests automatically proxy through the TEE — no code changes needed.
