@@ -22,7 +22,7 @@ export function Topbar({ projectName, status, sidebarOpen, onToggleSidebar }: To
   const cfg = STATUS_CONFIG[status];
 
   return (
-    <header className="sticky top-0 z-30 bg-background border-b-2 border-foreground px-4 py-2">
+    <header className="sticky top-0 z-30 bg-background border-b-2 border-foreground px-4 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
@@ -34,7 +34,7 @@ export function Topbar({ projectName, status, sidebarOpen, onToggleSidebar }: To
 
           <div className="flex items-center gap-2">
             <span className="text-[12px] font-mono text-muted-foreground">$</span>
-            <h2 className="text-xs font-mono font-bold tracking-wider uppercase">
+            <h2 className="text-sm font-sans font-bold tracking-widest uppercase">
               {projectName || "dope"}
             </h2>
           </div>
