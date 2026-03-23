@@ -12,15 +12,19 @@ CRITICAL RULES:
 - Only draw negative conclusions from data that is actually present and clearly negative.
 - Well-known protocols (Aave, Uniswap, Compound, etc.) have massive communities. Zero metrics for these projects means our data pipeline failed, not that they have no community.`;
 
-  const noData = data.twitterFollowers === 0 && data.recentMentions.length === 0 && data.communityComplaints.length === 0;
+  // Insufficient data: skip LLM call, mark as unavailable (-1)
+  // Return -1 if: no followers AND (no mentions OR no engagement) — indicates data fetch failure
+  const hasFollowers = data.twitterFollowers > 0;
+  const hasMentions = data.recentMentions && data.recentMentions.length > 0;
+  const hasEngagement = data.avgEngagementRate > 0;
+  const noData = !hasFollowers && (!hasMentions || !hasEngagement);
 
-  // No data at all: skip LLM call, return a marker result
   if (noData) {
     return {
       layer: "social",
       score: -1,
-      summary: "Social data unavailable. No metrics could be fetched for this project. This layer is excluded from the final integrity score.",
-      signals: [{ text: "No social data available from Dune or Twitter", severity: "low", source: "data-pipeline", confidence: 0.1 }],
+      summary: "Social data unavailable. No meaningful metrics could be fetched for this project. This layer is excluded from the final integrity score.",
+      signals: [{ text: "Insufficient social data from Dune or Twitter API — this layer cannot be scored and is excluded from integrity calculation", severity: "low", source: "data-pipeline", confidence: 0.1 }],
     };
   }
 

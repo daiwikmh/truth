@@ -19,11 +19,6 @@ async function synthesize(
     layerScores[l.layer] = l.score;
   }
 
-  // Governance brownie points: +30 if development score > 50
-  if (layerScores.development && layerScores.development > 50 && layerScores.governance >= 0) {
-    layerScores.governance = Math.min(100, layerScores.governance + 30);
-  }
-
   const unavailableNote = unavailableLayers.length > 0
     ? `\nUNAVAILABLE LAYERS (excluded from scoring): ${unavailableLayers.map((l) => l.layer).join(", ")}. These layers had no data and must NOT affect the integrity score. Only score based on available layers.\n`
     : "";
@@ -53,9 +48,10 @@ Layer scores (only available layers): ${layerScoreStr}
 Instructions:
 1. Group signals into 3-6 thematic Impact Vectors (each combining signals from multiple layers where possible).
 2. For each vector assign weight (weights sum ~1.0), claimedPerformance, and observedReality. The GAP between claimed and observed is the key insight.
-3. Compute: IntegrityScore = 100 * (1 - sum(weight * |claimed - observed|)), clamped 0-100.
-4. Verdict: "exceptional" (80+), "strong" (60-79), "moderate" (40-59), "critical" (<40).
-5. Recommendations must be objective risk observations (e.g. "Token distribution shows rug pull patterns"). Do NOT use funding directives like "halt funding" or "approve investment".
+3. Apply governance brownie points: If development score > 50, add 30 to governance score (capped at 100).
+4. Compute: IntegrityScore = 100 * (1 - sum(weight * |claimed - observed|)), clamped 0-100.
+5. Verdict: "exceptional" (80+), "strong" (60-79), "moderate" (40-59), "critical" (<40).
+6. Recommendations must be objective risk observations (e.g. "Token distribution shows rug pull patterns"). Do NOT use funding directives like "halt funding" or "approve investment".
 
 Return this exact JSON:
 {"projectName":"${projectName}","integrityScore":<number>,"verdict":"exceptional|strong|moderate|critical","executiveSummary":"<2-3 sentences>","impactVectors":[{"theme":"<name>","summary":"<paragraph>","weight":<0-1>,"claimedPerformance":<0-1>,"observedReality":<0-1>,"signals":[{"text":"<text>","severity":"low|medium|high|critical","source":"<src>","confidence":<0-1>}]}],"layerScores":${JSON.stringify(layerScores)},"recommendations":["<rec1>","<rec2>","<rec3>"]}`
