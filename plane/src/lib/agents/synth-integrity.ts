@@ -19,6 +19,11 @@ async function synthesize(
     layerScores[l.layer] = l.score;
   }
 
+  // Governance brownie points: +30 if development score > 50
+  if (layerScores.development && layerScores.development > 50 && layerScores.governance >= 0) {
+    layerScores.governance = Math.min(100, layerScores.governance + 30);
+  }
+
   const unavailableNote = unavailableLayers.length > 0
     ? `\nUNAVAILABLE LAYERS (excluded from scoring): ${unavailableLayers.map((l) => l.layer).join(", ")}. These layers had no data and must NOT affect the integrity score. Only score based on available layers.\n`
     : "";
